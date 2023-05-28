@@ -1,0 +1,10 @@
+singleQuote: true
+tabWidth: 2
+trailingComma: all
+overrides:
+  - files: ['*.ts', '*.mts', '*.js', '*.mjs', '*.cjs']
+    options:
+      tabWidth: 4
+#Plugin to sort imports
+#https://www.npmjs.com/package/prettier-plugin-organize-imports
+organizeImportsSkipDestructiveCodeActions: true

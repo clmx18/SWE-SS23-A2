@@ -1,24 +1,12 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { BuchQueryField, FilterParam } from './interfaces';
+import { buildQuery } from './queryBuilder';
 
-export const queryBuch = async (search?: [SearchParameter]) => {
-    if (search && search.length > 0) {
-    }
-
-    //titel
-    //id
-    //ISBN
-    //ART
-
-    const query = `{
-        buecher {
-            id
-            version
-            art
-            titel {
-                titel
-            }
-        }
-    }`;
+export const queryBuch = async (
+    queryFields?: BuchQueryField[],
+    queryFilter?: FilterParam[],
+): Promise<AxiosResponse> => {
+    const query = buildQuery(queryFields, queryFilter);
 
     const options = {
         method: 'POST',
@@ -32,15 +20,7 @@ export const queryBuch = async (search?: [SearchParameter]) => {
         },
     };
 
-    axios
-        .request(options)
-        .then(function (response) {
-            const res = response.data; // Response received from the API
-            console.log(JSON.stringify(res));
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    return axios.request(options);
 };
 
 export const login = async (username: string, password: string) => {

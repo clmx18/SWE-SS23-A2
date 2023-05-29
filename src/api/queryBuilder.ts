@@ -96,8 +96,15 @@ export const buildQuery = (
 
     let filter = 'buecher';
     if (queryFilter && queryFilter.length > 0) {
-        //TODO Implement filter
-        //filter = `buecher ()`;
+        let p = '';
+        for (const index of queryFilter.keys()) {
+            p += `${queryFilter[index].key}: "${queryFilter[index].value}"`;
+            index < queryFilter.length - 1 && queryFilter.length > 1
+                ? (p += ', ')
+                : '';
+        }
+        filter = `buecher (${p})`;
+        console.log('FILTER: ' + filter);
     }
 
     return `{

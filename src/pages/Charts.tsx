@@ -91,10 +91,16 @@ function Charts() {
       <h2>Diagramme</h2>
       <Grid container spacing={2} justifyContent={'center'}>
         <Grid item md={8} lg={6}>
-          <div id="pieChart" style={{ width: '500px', height: '500px' }}></div>
+          <div
+            id="pieChart"
+            style={{ width: '500px', height: '500px', margin: '0 auto' }}
+          ></div>
         </Grid>
         <Grid item md={8} lg={6}>
-          <div id="barChart" style={{ width: '500px', height: '500px' }}></div>
+          <div
+            id="barChart"
+            style={{ width: '500px', height: '500px', margin: '0 auto' }}
+          ></div>
         </Grid>
       </Grid>
     </>

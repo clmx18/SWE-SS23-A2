@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import Search from './pages/Search';
+import SearchDetails from './pages/SearchDetails';
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: 'search',
         element: <Search />,
+      },
+      {
+        path: 'search/:id',
+        element: <SearchDetails />,
       },
       {
         path: 'create',

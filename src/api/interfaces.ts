@@ -1,6 +1,6 @@
 export interface FilterParam {
     key: string;
-    value: string;
+    value: string | boolean | number;
 }
 
 export enum BuchQueryField {

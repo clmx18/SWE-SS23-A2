@@ -1,3 +1,5 @@
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import {
   Button,
   Card,
@@ -11,12 +13,13 @@ import {
   MenuItem,
   Rating,
   Select,
+  Skeleton,
   TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { queryBuch } from '../api/graphql';
+import { queryBuecher } from '../api/graphql';
 import { Buch, BuchQueryField, FilterParam } from '../api/interfaces';
 
 function Search() {
@@ -25,6 +28,8 @@ function Search() {
     fetchBuecher();
   }, []);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(undefined);
   const [filter, setFilter] = useState({
     titel: '',
     art: '',
@@ -63,6 +68,9 @@ function Search() {
   };
 
   const fetchBuecher = () => {
+    setIsLoading(true);
+    setIsError(undefined);
+
     const queryFilter: FilterParam[] = [];
 
     if (filter.titel.length > 0)
@@ -74,7 +82,7 @@ function Search() {
     if (filter.rating > 0)
       queryFilter.push({ key: 'rating', value: filter.rating });
 
-    queryBuch(
+    queryBuecher(
       [
         BuchQueryField.id,
         BuchQueryField.titel,
@@ -86,13 +94,21 @@ function Search() {
       queryFilter,
     )
       .then((result) => {
+        setIsLoading(false);
+
         if (result.data.data.buecher) {
           setBuecher(result.data.data.buecher);
         }
-        //TODO Empty Result
+        if (result.data.errors) {
+          const errorString = result.data.errors
+            .flatMap((error: any) => error.message)
+            .toString();
+          setIsError(errorString);
+        }
       })
-      .catch(() => {
-        //TODO ERROR
+      .catch((err) => {
+        setIsLoading(false);
+        setIsError(err.message);
       });
   };
 
@@ -107,7 +123,7 @@ function Search() {
       >
         <Grid item md={3}>
           <h3>Suchfilter festlegen</h3>
-          <p>Sie können mehrere Suchfilter gleichzeitig festlegen.</p>
+          <p>Sie können mehrere Suchfilter gleichzeitig festlegen</p>
           <div style={{ textAlign: 'right', paddingBottom: '0.3rem' }}>
             <Button onClick={resetFilter}>Zurücksetzen</Button>
           </div>
@@ -174,60 +190,108 @@ function Search() {
         </Grid>
         <Grid item md={9}>
           <div style={{ padding: '3rem' }}>
-            {buecher.map((buch: Buch) => {
-              return (
-                <Card
-                  style={{
-                    textAlign: 'left',
-                    marginBottom: '2rem',
-                    paddingLeft: '1rem',
-                  }}
-                  key={buch.id}
-                >
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {buch.titel!.titel}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      variant="body1"
-                      component="div"
-                      style={{ marginLeft: '0.5rem' }}
+            {isLoading === true ? (
+              <Card
+                style={{
+                  textAlign: 'left',
+                  marginBottom: '2rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <CardContent>
+                  <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                  <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                  <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                </CardContent>
+                <CardActions style={{ justifyContent: 'end' }}>
+                  <Skeleton variant="rounded" width={120} height={30} />
+                </CardActions>
+              </Card>
+            ) : (
+              false
+            )}
+            {isError !== undefined ? (
+              <Card
+                style={{
+                  textAlign: 'center',
+                  marginBottom: '2rem',
+                  paddingLeft: '1rem',
+                }}
+              >
+                <CardContent>
+                  <WarningAmberOutlinedIcon fontSize="large" />
+                  <Typography gutterBottom variant="h5" component="div">
+                    Keine Suchergebnisse gefunden
+                  </Typography>
+                  <Typography
+                    gutterBottom
+                    variant="body1"
+                    component="div"
+                    style={{ color: 'red', marginTop: '1rem' }}
+                  >
+                    {isError}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ) : (
+              false
+            )}
+            {!isLoading && !isError && buecher.length > 0
+              ? buecher.map((buch: Buch) => {
+                  return (
+                    <Card
+                      style={{
+                        textAlign: 'left',
+                        marginBottom: '2rem',
+                        paddingLeft: '1rem',
+                      }}
+                      key={buch.id}
                     >
-                      <b>ISBN:</b> {buch.isbn}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      variant="body1"
-                      component="div"
-                      style={{ marginLeft: '0.5rem' }}
-                    >
-                      <b>ART:</b> {buch.art}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      variant="body1"
-                      component="div"
-                      style={{ marginLeft: '0.5rem' }}
-                    >
-                      <b>LIEFERBAR:</b>{' '}
-                      {buch.lieferbar === true ? 'Ja' : 'Nein'}
-                    </Typography>
-                    <Rating
-                      value={buch.rating}
-                      readOnly={true}
-                      sx={{ '& .MuiSvgIcon-root': { fontSize: 25 } }}
-                      style={{ marginLeft: '0.5rem' }}
-                    />
-                  </CardContent>
-                  <CardActions style={{ justifyContent: 'end' }}>
-                    <Button component={Link} to={`/search/${buch.id}`}>
-                      Details anzeigen
-                    </Button>
-                  </CardActions>
-                </Card>
-              );
-            })}
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {buch.titel!.titel}
+                        </Typography>
+                        <Typography
+                          gutterBottom
+                          variant="body1"
+                          component="div"
+                          style={{ marginLeft: '0.5rem' }}
+                        >
+                          <b>ISBN:</b> {buch.isbn}
+                        </Typography>
+                        <Typography
+                          gutterBottom
+                          variant="body1"
+                          component="div"
+                          style={{ marginLeft: '0.5rem' }}
+                        >
+                          <b>ART:</b> {buch.art}
+                        </Typography>
+                        <Typography
+                          gutterBottom
+                          variant="body1"
+                          component="div"
+                          style={{ marginLeft: '0.5rem' }}
+                        >
+                          <b>LIEFERBAR:</b>{' '}
+                          {buch.lieferbar === true ? 'Ja' : 'Nein'}
+                        </Typography>
+                        <Rating
+                          value={buch.rating}
+                          readOnly={true}
+                          sx={{ '& .MuiSvgIcon-root': { fontSize: 25 } }}
+                          style={{ marginLeft: '0.5rem' }}
+                        />
+                      </CardContent>
+                      <CardActions style={{ justifyContent: 'end' }}>
+                        <Button component={Link} to={`/search/${buch.id}`}>
+                          Details anzeigen
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  );
+                })
+              : false}
           </div>
         </Grid>
       </Grid>

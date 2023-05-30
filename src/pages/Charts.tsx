@@ -1,12 +1,12 @@
 import { Grid } from '@mui/material';
 import * as Highcharts from 'highcharts';
 import { useEffect } from 'react';
-import { queryBuch } from '../api/graphql';
+import { queryBuecher } from '../api/graphql';
 import { Buch, BuchQueryField } from '../api/interfaces';
 
 function Charts() {
   useEffect(() => {
-    queryBuch([BuchQueryField.art, BuchQueryField.schlagwoerter])
+    queryBuecher([BuchQueryField.art, BuchQueryField.schlagwoerter])
       .then((result: any) => {
         if (result.data.data && !result.data.errors) {
           const seriesPieData = preparePieSeriesData(result.data.data.buecher);

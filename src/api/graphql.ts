@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { BuchQueryField, FilterParam } from './interfaces';
 import { buildQuery } from './queryBuilder';
 
-export const queryBuch = async (
+export const queryBuecher = async (
     queryFields?: BuchQueryField[],
     queryFilter?: FilterParam[],
 ): Promise<AxiosResponse> => {
@@ -22,6 +22,8 @@ export const queryBuch = async (
 
     return axios.request(options);
 };
+
+//TODO queryBuch mit ID-Suche
 
 export const login = async (username: string, password: string) => {
     const mutation = `

@@ -1,10 +1,10 @@
 import TextField from '@mui/material/TextField';
-import { queryBuch } from '../api/graphql';
+import { queryBuecher } from '../api/graphql';
 
 function Home() {
   return (
     <div className="card">
-      <button onClick={() => queryBuch()}>search</button>
+      <button onClick={() => queryBuecher()}>search</button>
       <p>
         Edit <code>src/App.tsx</code> and save to test HMR (TODO)
       </p>

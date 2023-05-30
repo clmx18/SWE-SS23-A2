@@ -98,13 +98,23 @@ export const buildQuery = (
     if (queryFilter && queryFilter.length > 0) {
         let p = '';
         for (const index of queryFilter.keys()) {
-            p += `${queryFilter[index].key}: "${queryFilter[index].value}"`;
+            const type = typeof queryFilter[index].value;
+
+            switch (type) {
+                case 'string':
+                    p += `${queryFilter[index].key}: "${queryFilter[index].value}"`;
+                    break;
+                case 'boolean':
+                case 'number':
+                    p += `${queryFilter[index].key}: ${queryFilter[index].value}`;
+                    break;
+            }
+
             index < queryFilter.length - 1 && queryFilter.length > 1
                 ? (p += ', ')
                 : '';
         }
         filter = `buecher (${p})`;
-        console.log('FILTER: ' + filter);
     }
 
     return `{

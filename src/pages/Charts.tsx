@@ -12,11 +12,18 @@ function Charts() {
           const seriesPieData = preparePieSeriesData(result.data.data.buecher);
           const seriesBarData = prepareBarSeriesData(result.data.data.buecher);
 
-          Highcharts.chart('pieChart', {
+          const pieChartSeries: any = {
+            name: 'Art',
+            data: seriesPieData,
+          };
+          const barChartSeries: any = {
+            name: 'Schlagwörter',
+            data: seriesBarData[1],
+          };
+
+          Highcharts.chart({
             chart: {
-              plotBackgroundColor: null,
-              plotBorderWidth: null,
-              plotShadow: false,
+              renderTo: 'pieChart',
               type: 'pie',
             },
             title: {
@@ -41,17 +48,12 @@ function Charts() {
                 showInLegend: true,
               },
             },
-            series: [
-              {
-                name: 'Art',
-                colorByPoint: true,
-                data: seriesPieData,
-              },
-            ],
+            series: [pieChartSeries],
           });
-          Highcharts.chart('barChart', {
+          Highcharts.chart({
             chart: {
               type: 'column',
+              renderTo: 'barChart',
             },
             title: {
               text: 'Verwendung der Schlagwörter',
@@ -72,17 +74,12 @@ function Charts() {
                 borderWidth: 0,
               },
             },
-            series: [
-              {
-                name: 'Schlagwörter',
-                data: seriesBarData[1],
-              },
-            ],
+            series: [barChartSeries],
           });
         }
       })
       .catch((err) => {
-        //TODO Display ERROR
+        console.log(err.message);
       });
   }, []);
 

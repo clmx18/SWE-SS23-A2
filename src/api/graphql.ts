@@ -16,14 +16,47 @@ export const queryBuecher = async (
             'X-REQUEST-TYPE': 'GraphQL',
         },
         data: {
-            query: query,
+            query,
         },
     };
 
     return axios.request(options);
 };
 
-//TODO queryBuch mit ID-Suche
+export const queryBuch = async (id: string): Promise<AxiosResponse> => {
+    const query = `{
+        buch (id: "${id}") {
+          id
+          version
+          isbn
+          rating
+          art
+          preis
+          rabatt
+          lieferbar
+          datum
+          homepage
+          schlagwoerter
+          titel {
+            titel
+          }
+        }
+    }`;
+
+    const options = {
+        method: 'POST',
+        url: '/api',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-REQUEST-TYPE': 'GraphQL',
+        },
+        data: {
+            query,
+        },
+    };
+
+    return axios.request(options);
+};
 
 export const login = async (username: string, password: string) => {
     const mutation = `

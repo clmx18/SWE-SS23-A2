@@ -46,7 +46,7 @@ function SearchDetails() {
       <Button
         variant="contained"
         type="submit"
-        style={{ backgroundColor: '#DC143C'}}
+        style={{ backgroundColor: '#DC143C', color: '#FFF'}}
         component={Link} 
         to={`/search`}
       >
@@ -141,7 +141,7 @@ function SearchDetails() {
             style={{ marginLeft: '0.5rem' }}
           >
             <b>LIEFERBAR:</b>{' '}
-            {buch.lieferbar}
+            {buch.lieferbar === true ? 'Ja' : 'Nein'}
           </Typography>
 
           <Typography

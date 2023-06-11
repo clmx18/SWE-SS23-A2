@@ -1,31 +1,26 @@
-/* eslint-disable react/react-in-jsx-scope */
-/* eslint-disable max-lines-per-function */
-/* eslint-disable func-style */
 import {
   Box,
   Button,
   Checkbox,
   FormControl,
   FormControlLabel,
-  FormGroup,
-  FormHelperText,
   FormLabel,
   Input,
-  InputLabel,
   MenuItem,
   Rating,
   Select,
-  Switch,
-  TextField,
   Typography,
 } from '@mui/material';
 
 import { useState } from 'react';
+import { createBuch } from '../api/graphql';
 
 function Create() {
+  const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState({
     isbn: '',
-    rating: null,
+    titel: '',
+    rating: 0,
     art: '',
     preis: '',
     rabatt: '',
@@ -45,10 +40,33 @@ function Create() {
     setFormValues({ ...formValues, rating: newValue });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Buchdaten speichern oder verarbeiten
-    console.log(formValues);
+    try {
+      const response = await createBuch({
+        titel: formValues.titel,
+        isbn: formValues.isbn,
+        rating: formValues.rating,
+        art: formValues.art,
+        preis: parseFloat(formValues.preis),
+        rabatt: parseFloat(formValues.rabatt),
+        lieferbar: formValues.lieferbar,
+        datum: formValues.datum,
+        homepage: formValues.homepage,
+        schlagwoerter: formValues.schlagwoerter.split(',').map((tag) => tag.trim()),
+      });
+  
+      if (response.status === 200) {
+        console.log('Buch erfolgreich erstellt:', response.data);
+        setIsBookCreated(true);
+      } else {
+        console.log('Fehler beim Erstellen des Buchs:', response.data);
+        setIsBookCreated(false);
+      }
+    } catch (error) {
+      console.log('Fehler beim Erstellen des Buchs:', error);
+      setIsBookCreated(false);
+    }
   };
 
   return (
@@ -66,16 +84,34 @@ function Create() {
             >
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '2rem', marginRight: '2rem' }}>
-                  ISBN
+                  Titel
                 </FormLabel>
                 <Input
                   type="text"
-                  name="isbn"
-                  value={formValues.isbn}
+                  name="titel"
+                  value={formValues.titel}
                   onChange={handleInputChange}
-                  sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
+                  sx={{ marginBottom: '1rem', marginLeft: '2rem', marginRight: '-1rem' }}
                 />
               </Box>
+              <FormControl
+                fullWidth
+                margin="normal"
+                sx={{ marginLeft: '1rem' }}
+              >
+                <Box display="flex" alignItems="center">
+                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
+                    ISBN
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    name="isbn"
+                    value={formValues.isbn}
+                    onChange={handleInputChange}
+                    sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
+                  />
+                </Box>
+              </FormControl>
               <FormControl
                 fullWidth
                 margin="normal"
@@ -216,15 +252,27 @@ function Create() {
           </Box>
         </Box>
         <Box textAlign="center" marginTop="1rem">
+        <Box display="flex" alignItems="center" justifyContent="center">
           <Button
             type="submit"
             variant="contained"
             onClick={handleSubmit}
-            style={{ backgroundColor: '#DC143C' }}
+            style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
           >
             Buch erstellen
           </Button>
+          {isBookCreated === true && (
+            <Typography variant="body1" sx={{ color: 'green' }}>
+              Buch erfolgreich erstellt
+            </Typography>
+          )}
+          {isBookCreated === false && (
+            <Typography variant="body1" sx={{ color: 'red' }}>
+              Fehler beim Erstellen des Buchs
+            </Typography>
+          )}
         </Box>
+      </Box>
       </form>
     </Box>
   );

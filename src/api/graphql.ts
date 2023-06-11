@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { BuchQueryField, FilterParam } from './interfaces';
+import { BuchQueryField, FilterParam, BuchInput } from './interfaces';
 import { buildQuery } from './queryBuilder';
 
 export const queryBuecher = async (
@@ -57,6 +57,41 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
 
     return axios.request(options);
 };
+
+export const createBuch = async (buchData: BuchInput): Promise<AxiosResponse> => {
+    const mutation = `mutation {
+      createBuch(input: ${JSON.stringify(buchData)}) {
+        id
+        version
+        isbn
+        rating
+        art
+        preis
+        rabatt
+        lieferbar
+        datum
+        homepage
+        schlagwoerter
+        titel {
+          titel
+        }
+      }
+    }`;
+  
+    const options = {
+      method: 'POST',
+      url: '/api',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-REQUEST-TYPE': 'GraphQL',
+      },
+      data: {
+        query: mutation,
+      },
+    };
+  
+    return axios.request(options);
+  };
 
 export const login = async (username: string, password: string) => {
     const mutation = `

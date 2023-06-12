@@ -14,20 +14,21 @@ import {
 
 import { useState } from 'react';
 import { createBuch } from '../api/graphql';
+import { BuchInput } from '../api/interfaces';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
-  const [formValues, setFormValues] = useState({
+  const [formValues, setFormValues] = useState<BuchInput>({
     isbn: '',
     titel: '',
     rating: 0,
     art: '',
-    preis: '',
-    rabatt: '',
+    preis: 0,
+    rabatt: 0,
     lieferbar: false,
     datum: '',
     homepage: '',
-    schlagwoerter: '',
+    schlagwoerter: [],
   });
 
   const handleInputChange = (e) => {
@@ -48,12 +49,12 @@ function Create() {
         isbn: formValues.isbn,
         rating: formValues.rating,
         art: formValues.art,
-        preis: parseFloat(formValues.preis),
-        rabatt: parseFloat(formValues.rabatt),
+        preis: formValues.preis,
+        rabatt: formValues.rabatt,
         lieferbar: formValues.lieferbar,
         datum: formValues.datum,
         homepage: formValues.homepage,
-        schlagwoerter: formValues.schlagwoerter.split(',').map((tag) => tag.trim()),
+        schlagwoerter: formValues.schlagwoerter,
       });
   
       if (response.status === 200) {
@@ -61,11 +62,11 @@ function Create() {
         setIsBookCreated(true);
       } else {
         console.log('Fehler beim Erstellen des Buchs:', response.data);
-        setIsBookCreated(false);
+        setIsBookCreated(true);
       }
     } catch (error) {
       console.log('Fehler beim Erstellen des Buchs:', error);
-      setIsBookCreated(false);
+      setIsBookCreated(true);
     }
   };
 
@@ -122,7 +123,7 @@ function Create() {
                     Preis
                   </FormLabel>
                   <Input
-                    type="text"
+                    type="number"
                     name="preis"
                     value={formValues.preis}
                     onChange={handleInputChange}
@@ -140,7 +141,7 @@ function Create() {
                     Rabatt
                   </FormLabel>
                   <Input
-                    type="text"
+                    type="number"
                     name="rabatt"
                     value={formValues.rabatt}
                     onChange={handleInputChange}
@@ -172,11 +173,11 @@ function Create() {
             <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
-                  Schlagwörter
+                  Schlagwoerter
                 </FormLabel>
                 <Input
                   type="text"
-                  name="schlagwörter"
+                  name="schlagwoerter"
                   value={formValues.schlagwoerter}
                   onChange={handleInputChange}
                   sx={{ marginBottom: '1rem' }}

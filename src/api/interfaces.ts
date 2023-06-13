@@ -29,7 +29,7 @@ export interface BuchInput {
     datum?: string;
     homepage?: string;
     schlagwoerter?: string[];
-  }
+}
 
 export interface Buch {
     id?: string;

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { BuchQueryField, FilterParam, BuchInput } from './interfaces';
+import { BuchInput, BuchQueryField, FilterParam } from './interfaces';
 import { buildQuery } from './queryBuilder';
 
 export const queryBuecher = async (
@@ -58,7 +58,9 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
     return axios.request(options);
 };
 
-export const createBuch = async (buchData: BuchInput): Promise<AxiosResponse> => {
+export const createBuch = async (
+    buchData: BuchInput,
+): Promise<AxiosResponse> => {
     const mutation = `mutation {
       createBuch(input: ${JSON.stringify(buchData)}) {
         id
@@ -77,21 +79,21 @@ export const createBuch = async (buchData: BuchInput): Promise<AxiosResponse> =>
         }
       }
     }`;
-  
+
     const options = {
-      method: 'POST',
-      url: '/api',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-REQUEST-TYPE': 'GraphQL',
-      },
-      data: {
-        query: mutation,
-      },
+        method: 'POST',
+        url: '/api',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-REQUEST-TYPE': 'GraphQL',
+        },
+        data: {
+            query: mutation,
+        },
     };
-  
+
     return axios.request(options);
-  };
+};
 
 export const login = async (username: string, password: string) => {
     const mutation = `
@@ -115,13 +117,5 @@ export const login = async (username: string, password: string) => {
         },
     };
 
-    axios
-        .request(options)
-        .then(function (response) {
-            const res = response.data; // Response received from the API
-            console.log(JSON.stringify(res));
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    return axios.request(options);
 };

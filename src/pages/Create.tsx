@@ -20,7 +20,7 @@ function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
   const [formValues, setFormValues] = useState<BuchInput>({
     isbn: '',
-    titel: '',
+    titel: {titel: ''},
     rating: 0,
     art: '',
     preis: 0,
@@ -44,32 +44,23 @@ function Create() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await createBuch({
-        titel: formValues.titel,
-        isbn: formValues.isbn,
-        rating: formValues.rating,
-        art: formValues.art,
-        preis: formValues.preis,
-        rabatt: formValues.rabatt,
-        lieferbar: formValues.lieferbar,
-        datum: formValues.datum,
-        homepage: formValues.homepage,
-        schlagwoerter: formValues.schlagwoerter,
-      });
-
+      const response = await createBuch(formValues);
+  
       if (response.status === 200) {
         console.log('Buch erfolgreich erstellt:', response.data);
         setIsBookCreated(true);
       } else {
         console.log('Fehler beim Erstellen des Buchs:', response.data);
-        setIsBookCreated(true);
+        setIsBookCreated(false);
+        
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('Fehler beim Erstellen des Buchs:', error);
-      setIsBookCreated(true);
+      setIsBookCreated(false);
+      const errorMessage = error.message;
+        alert(`Fehler beim Erstellen des Buchs: ${errorMessage}`);
     }
   };
-
   return (
     <Box display="flex" justifyContent="center">
       <form onSubmit={handleSubmit} style={{ width: '50%' }}>
@@ -84,7 +75,7 @@ function Create() {
               sx={{ marginLeft: '1rem', marginTop: '1rem' }}
             >
               <Box display="flex" alignItems="center">
-                <FormLabel sx={{ marginLeft: '2rem', marginRight: '2rem' }}>
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
                   Titel
                 </FormLabel>
                 <Input
@@ -92,13 +83,10 @@ function Create() {
                   name="titel"
                   value={formValues.titel}
                   onChange={handleInputChange}
-                  sx={{
-                    marginBottom: '1rem',
-                    marginLeft: '2rem',
-                    marginRight: '-1rem',
-                  }}
+                  sx={{ marginBottom: '1rem', marginLeft: '3.5rem', marginRight: '0,5rem' }}
                 />
               </Box>
+              </FormControl>
               <FormControl
                 fullWidth
                 margin="normal"
@@ -171,7 +159,6 @@ function Create() {
                   />
                 </Box>
               </FormControl>
-            </FormControl>
           </Box>
           <Box width="45%">
             <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>

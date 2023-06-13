@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { BuchQueryField, FilterParam, BuchInput } from './interfaces';
+import { BuchInput, BuchQueryField, FilterParam } from './interfaces';
 import { buildQuery } from './queryBuilder';
 
 export const queryBuecher = async (
@@ -105,13 +105,5 @@ export const login = async (username: string, password: string) => {
         },
     };
 
-    axios
-        .request(options)
-        .then(function (response) {
-            const res = response.data; // Response received from the API
-            console.log(JSON.stringify(res));
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    return axios.request(options);
 };

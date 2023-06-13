@@ -244,27 +244,27 @@ function Create() {
           </Box>
         </Box>
         <Box textAlign="center" marginTop="1rem">
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <Button
-            type="submit"
-            variant="contained"
-            onClick={handleSubmit}
-            style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
-          >
-            Buch erstellen
-          </Button>
-          {isBookCreated === true && (
-            <Typography variant="body1" sx={{ color: 'green' }}>
-              Buch erfolgreich erstellt
-            </Typography>
-          )}
-          {isBookCreated === false && (
-            <Typography variant="body1" sx={{ color: 'red' }}>
-              Fehler beim Erstellen des Buchs
-            </Typography>
-          )}
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Button
+              type="submit"
+              variant="contained"
+              onClick={handleSubmit}
+              style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
+            >
+              Buch erstellen
+            </Button>
+            {isBookCreated === true && (
+              <Typography variant="body1" sx={{ color: 'green' }}>
+                Buch erfolgreich erstellt
+              </Typography>
+            )}
+            {isBookCreated === false && (
+              <Typography variant="body1" sx={{ color: 'red' }}>
+                Fehler beim Erstellen des Buchs
+              </Typography>
+            )}
+          </Box>
         </Box>
-      </Box>
       </form>
     </Box>
   );

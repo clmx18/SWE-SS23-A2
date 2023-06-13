@@ -58,40 +58,30 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
     return axios.request(options);
 };
 
-export const createBuch = async (buchData: BuchInput): Promise<AxiosResponse> => {
-    const mutation = `mutation {
-      createBuch(input: ${JSON.stringify(buchData)}) {
-        id
-        version
-        isbn
-        rating
-        art
-        preis
-        rabatt
-        lieferbar
-        datum
-        homepage
-        schlagwoerter
-        titel {
-          titel
-        }
-      }
-    }`;
-  
-    const options = {
-      method: 'POST',
-      url: '/api',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-REQUEST-TYPE': 'GraphQL',
+export const createBuch = async (buchData: BuchInput) => {
+  const mutation = `
+    mutation create($buchData: BuchInput!) {
+      create(input: $buchData)
+    }
+  `;
+
+  const options = {
+    method: 'POST',
+    url: '/api',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-REQUEST-TYPE': 'GraphQL',
+    },
+    data: {
+      query: mutation,
+      variables: {
+        buchData: buchData,
       },
-      data: {
-        query: mutation,
-      },
-    };
-  
-    return axios.request(options);
+    },
   };
+
+  return axios.request(options);
+};
 
 export const login = async (username: string, password: string) => {
     const mutation = `

@@ -22,6 +22,8 @@ import Toolbar from '@mui/material/Toolbar';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { Typography } from '@mui/material';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 const drawerWidth = 240;
 
@@ -127,6 +129,15 @@ export default function Nav() {
           >
             <MenuIcon />
           </IconButton>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            BookSearch
+          </Typography>
+          <AutoStoriesIcon sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }} />
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

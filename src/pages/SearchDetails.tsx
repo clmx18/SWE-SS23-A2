@@ -86,28 +86,98 @@ const fetchBuch = () => {
 
   return (
     <>
-      <h2 style={{ padding: '0rem' }}>Detailansicht</h2>
+    <h2 style={{ padding: '0rem' }}>Detailansicht</h2>
 
-      <Grid item md={9}>
-        <div style={{ padding: '1rem' }}>
-          <CardActions style={{ justifyContent: 'start' }}>
-            <Button
-              variant="contained"
-              type="submit"
-              style={{ backgroundColor: '#DC143C', color: '#FFF' }}
-              component={Link}
-              to={`/search`}
-            >
-              Zurück
-            </Button>
-          </CardActions>
+  <Grid item md={9}>
+  <div style={{ padding: '1rem' }}>
 
-          <Card
-            style={{
-              textAlign: 'left',
-              marginBottom: '2rem',
-              paddingLeft: '1rem',
-            }}
+    <CardActions style={{ justifyContent: 'start'}}>
+      <Button
+        variant="contained"
+        type="submit"
+        style={{ backgroundColor: '#DC143C', color: '#FFF'}}
+        component={Link} 
+        to={`/search`}
+      >
+        Zurück
+      </Button>
+    </CardActions>
+
+      <Card
+        style={{
+          textAlign: 'left',
+          marginBottom: '2rem',
+          paddingLeft: '1rem',
+        }}
+      >
+
+        <CardContent>
+          <Typography 
+          gutterBottom variant="h5" 
+          component="div" 
+          style={{ marginLeft: '0.5rem' }}
+          >
+            {buch.titel.titel}
+          </Typography>
+
+          <Rating
+            value={buch.rating}
+            readOnly={true}
+            sx={{ '& .MuiSvgIcon-root': { fontSize: 25 } }}
+            style={{ marginLeft: '0.5rem', marginBottom: '1rem'}}
+          />
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem'}}
+          >
+            <b>ID:</b> {buch.id}
+          </Typography>
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <b>VERSION:</b> {buch.version}
+          </Typography>
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <b>ISBN:</b> {buch.isbn}
+          </Typography>
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <b>ART:</b> {buch.art}
+          </Typography>
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <b>PREIS:</b> {''}
+            {convertToPrice(buch.preis)}
+          </Typography>
+
+          <Typography
+            gutterBottom
+            variant="body1"
+            component="div"
+            style={{ marginLeft: '0.5rem' }}
           >
             <b>RABATT:</b> {''}
             {decimalToPercentage(buch.rabatt)}

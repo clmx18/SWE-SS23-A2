@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   FormLabel,
   Input,
+  InputLabel,
   MenuItem,
   Rating,
   Select,
@@ -14,13 +15,15 @@ import {
 
 import { useState } from 'react';
 import { createBuch } from '../api/graphql';
-import { BuchInput } from '../api/interfaces';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
-  const [formValues, setFormValues] = useState<BuchInput>({
+  const [formValues, setFormValues] = useState({
+    titel: {
+      titel: '',
+      untertitel:''
+    },
     isbn: '',
-    titel: {titel: ''},
     rating: 0,
     art: '',
     preis: 0,
@@ -33,7 +36,7 @@ function Create() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+    const newValue = type === 'checkbox' ? checked : type === 'number' ? parseFloat(value) : value;
     setFormValues({ ...formValues, [name]: newValue });
   };
 
@@ -129,7 +132,7 @@ function Create() {
                 sx={{ marginLeft: '1rem' }}
               >
                 <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
+                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
                     Rabatt
                   </FormLabel>
                   <Input
@@ -147,7 +150,7 @@ function Create() {
                 sx={{ marginLeft: '1rem' }}
               >
                 <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
+                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
                     Homepage
                   </FormLabel>
                   <Input
@@ -175,9 +178,9 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+            <FormControl fullWidth margin="normal" sx={{ marginBottom: '1rem', marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
-                <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
                   Datum
                 </FormLabel>
                 <Input
@@ -189,7 +192,7 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+            <FormControl fullWidth margin="normal" sx={{ marginTop: '2rem',marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
                   Rating
@@ -201,7 +204,7 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+            <FormControl fullWidth margin="normal" sx={{ marginTop: '3rem', marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
                   Lieferbar
@@ -219,52 +222,45 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl
-              fullWidth
-              margin="normal"
-              sx={{ marginLeft: '1rem', marginTop: '1rem' }}
+            <FormControl fullWidth sx={{ marginTop: '2rem',marginLeft: '2rem' }}>
+            <InputLabel id="art-select-label">Art</InputLabel>
+            <Select
+              labelId="art-select-label"
+              id="art-select"
+              label="Art"
+              name="art"
+              value={formValues.art}
+              onChange={handleInputChange}
+              style={{ marginBottom: '1rem'}}
             >
-              <Box display="flex" alignItems="center">
-                <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
-                  Art
-                </FormLabel>
-                <Select
-                  labelId="art-select-label"
-                  id="art-select"
-                  name="art"
-                  value={formValues.art}
-                  onChange={handleInputChange}
-                  style={{ marginLeft: '2rem' }}
-                >
-                  <MenuItem value={'DRUCKAUSGABE'}>DRUCKAUSGABE</MenuItem>
-                  <MenuItem value={'KINDLE'}>KINDLE</MenuItem>
-                </Select>
-              </Box>
-            </FormControl>
+              <MenuItem value={'DRUCKAUSGABE'}>DRUCKAUSGABE</MenuItem>
+              <MenuItem value={'KINDLE'}>KINDLE</MenuItem>
+            </Select>
+          </FormControl>
           </Box>
         </Box>
         <Box textAlign="center" marginTop="1rem">
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <Button
-              type="submit"
-              variant="contained"
-              onClick={handleSubmit}
-              style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
-            >
-              Buch erstellen
-            </Button>
-            {isBookCreated === true && (
-              <Typography variant="body1" sx={{ color: 'green' }}>
-                Buch erfolgreich erstellt
-              </Typography>
-            )}
-            {isBookCreated === false && (
-              <Typography variant="body1" sx={{ color: 'red' }}>
-                Fehler beim Erstellen des Buchs
-              </Typography>
-            )}
-          </Box>
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <Button
+            type="submit"
+            variant="contained"
+            onClick={handleSubmit}
+            style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
+          >
+            Buch erstellen
+          </Button>
+          {isBookCreated === true && (
+            <Typography variant="body1" sx={{ color: 'green' }}>
+              Buch erfolgreich erstellt
+            </Typography>
+          )}
+          {isBookCreated === false && (
+            <Typography variant="body1" sx={{ color: 'red' }}>
+              Fehler beim Erstellen des Buchs
+            </Typography>
+          )}
         </Box>
+      </Box>
       </form>
     </Box>
   );

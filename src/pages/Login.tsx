@@ -32,15 +32,15 @@ export default function Login() {
   // useStates
   const [credentials, setCredentials] = React.useState(credentialsDefaultState);
   const [showSnackbar, setShowSnackbar] = React.useState(false);
-  const [error, setError] = React.useState(undefined);
+  const [error, setError] = React.useState<string | undefined>(undefined);
 
   // useEffects
   React.useEffect(() => {
-      setShowSnackbar(error !== undefined);
+    setShowSnackbar(error !== undefined);
   }, [error]);
 
   const resetCredentials = () => {
-    setCredentials(() => credentialsDefaultState);
+    setCredentials(credentialsDefaultState);
   };
 
   const handleChange = (event: any) => {
@@ -52,31 +52,23 @@ export default function Login() {
   };
 
   const handleClose = () => {
-    setError(undefined)
+    setError(undefined);
   };
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
     // Handle form submission logic here
     const { username, password } = credentials;
-    login(username, password)
-      .then((result) => {
-        const { errors, data } = result.data;
-        const { login } = data;
-        if (login) {
-          const { token, expiresIn, roles } = login;
-          console.log(token);
-        }
-        if (errors) {
-          const errMessage = errors
-            .flatMap((err: any) => err.message)
-            .toString();
-          setError(errMessage);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+    login(username, password).then((result) => {
+      const { errors } = result;
+      if (errors.length > 0) {
+        let errMessage = '';
+        errors.forEach((error) => {
+          errMessage = `${error}\n${errMessage}`;
+        });
+        setError(errMessage);
+      }
+    });
     resetCredentials();
   };
 

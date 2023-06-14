@@ -47,6 +47,13 @@ export interface Buch {
     schlagwoerter?: [string];
     titel?: {
         titel?: string;
-        untertitel?: String;
+        untertitel?: string;
     };
+}
+
+export interface LoginResult {
+    gotToken: boolean;
+    errors: string[];
+    expiresIn?: string;
+    issuer?: string;
 }

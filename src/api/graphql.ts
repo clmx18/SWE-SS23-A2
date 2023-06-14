@@ -1,6 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
-import { BuchInput, BuchQueryField, FilterParam } from './interfaces';
+import { BuchInput, BuchQueryField, FilterParam, LoginResult } from './interfaces';
 import { buildQuery } from './queryBuilder';
+
+// TODO Nur zum testen. Token nicht in Variable speichern!!
+let accessToken: string;
 
 export const queryBuecher = async (
     queryFields?: BuchQueryField[],
@@ -14,6 +17,7 @@ export const queryBuecher = async (
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
         data: {
             query,
@@ -43,12 +47,15 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
         }
     }`;
 
+    console.log(accessToken);
+
     const options = {
         method: 'POST',
         url: '/api',
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
         data: {
             query,
@@ -59,28 +66,29 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
 };
 
 export const createBuch = async (buchData: BuchInput) => {
-  const mutation = `
+    const mutation = `
     mutation create($buchData: BuchInput!) {
       create(input: $buchData)
     }
   `;
 
-  const options = {
-    method: 'POST',
-    url: '/api',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-REQUEST-TYPE': 'GraphQL',
-    },
-    data: {
-      query: mutation,
-      variables: {
-        buchData: buchData,
-      },
-    },
-  };
+    const options = {
+        method: 'POST',
+        url: '/api',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-REQUEST-TYPE': 'GraphQL',
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        },
+        data: {
+            query: mutation,
+            variables: {
+                buchData: buchData,
+            },
+        },
+    };
 
-  return axios.request(options);
+    return axios.request(options);
 };
 
 export const login = async (username: string, password: string) => {
@@ -105,5 +113,30 @@ export const login = async (username: string, password: string) => {
         },
     };
 
-    return axios.request(options);
+    const loginResult: LoginResult = {
+        gotToken: false,
+        errors: [],
+    };
+
+    await axios
+        .request(options)
+        .then((result) => {
+            const { errors, data } = result.data;
+            const { login } = data;
+            if (login) {
+                const { token } = login;
+                // TODO Tokenspeicherort ersetzen
+                accessToken = token;
+                loginResult.gotToken = true;
+            }
+            if (errors) {
+                const errMessage = errors
+                    .flatMap((err: any) => err.message)
+                    .toString();
+                loginResult.errors?.push(errMessage);
+            }
+        })
+        .catch((err) => loginResult.errors?.push(err.message));
+
+    return loginResult;
 };

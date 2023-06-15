@@ -18,6 +18,17 @@ import { createBuch } from '../api/graphql';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
+  const [validationErrors, setValidationErrors] = useState({
+    titel: { isValid: undefined, errorMessage: '' },
+    isbn: { isValid: undefined, errorMessage: '' },
+    rating: { isValid: undefined, errorMessage: '' },
+    art: { isValid: undefined, errorMessage: '' },
+    preis: { isValid: undefined, errorMessage: '' },
+    rabatt: { isValid: undefined, errorMessage: '' },
+    homepage: { isValid: undefined, errorMessage: '' },
+    schlagwoerter: { isValid: undefined, errorMessage: '' },
+  });
+  
   const [formValues, setFormValues] = useState({
     titel: {
       titel: '',
@@ -37,10 +48,78 @@ function Create() {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : type === 'number' ? parseFloat(value) : value;
+
+    validateInput(name, newValue);
+
     setFormValues({ ...formValues, [name]: newValue });
   };
 
+  const validateInput = (name, value) => {
+    switch (name) {
+      case 'isbn':
+        if (!/^(97[89])[- ][0-9]{1,2}[- ][0-9]{1,7}[- ][0-9]{1,6}[- ][0-9]$/.test(value)) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        }
+        break;
+        case 'preis':
+          if (value === '' || !/^(?:\d+|\d+,\d{1,2})$/.test(value)) {
+            setValidationErrors((prevState) => ({
+              ...prevState,
+              [name]: { isValid: false },
+            }));
+          } else {
+            setValidationErrors((prevState) => ({
+              ...prevState,
+              [name]: { isValid: true },
+            }));
+          }
+          break;
+          case 'rabatt':
+            if (value === '' || !/^(0(?:,000|,\d{3})?|1(?:,000)?|0,0[0-9]{2}|0,[0-9]{1,2})$/.test(value)) {
+              setValidationErrors((prevState) => ({
+                ...prevState,
+                [name]: { isValid: false },
+              }));
+            } else {
+              setValidationErrors((prevState) => ({
+                ...prevState,
+                [name]: { isValid: true },
+              }));
+            }
+            break;
+            case 'homepage':
+              if (!/^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/.test(value)) {
+                setValidationErrors((prevState) => ({
+                  ...prevState,
+                  [name]: { isValid: false },
+                }));
+              } else {
+                setValidationErrors((prevState) => ({
+                  ...prevState,
+                  [name]: { isValid: true },
+                }));
+              }
+              break;
+      // Weitere `case`-Anweisungen für andere Validierungen können hier hinzugefügt werden
+    
+      default:
+        break;
+    }
+    
+  };
+
   const handleRatingChange = (event, newValue) => {
+
+    validateInput('rating', newValue);
+
     setFormValues({ ...formValues, rating: newValue });
   };
 
@@ -86,7 +165,7 @@ function Create() {
                   name="titel"
                   value={formValues.titel}
                   onChange={handleInputChange}
-                  sx={{ marginBottom: '1rem', marginLeft: '3.5rem', marginRight: '0,5rem' }}
+                  sx={{ marginBottom: '1rem', marginLeft: '55px' }}
                 />
               </Box>
               </FormControl>
@@ -107,6 +186,11 @@ function Create() {
                     sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
                   />
                 </Box>
+                {validationErrors.isbn.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                Ungültige ISBN. Bitte ISBN 13 eingeben.
+                </Typography>
+                )}
               </FormControl>
               <FormControl
                 fullWidth
@@ -125,6 +209,11 @@ function Create() {
                     sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
                   />
                 </Box>
+                {validationErrors.preis.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                Bitte gültigen Preis angeben
+                </Typography>
+                )}
               </FormControl>
               <FormControl
                 fullWidth
@@ -143,6 +232,11 @@ function Create() {
                     sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
                   />
                 </Box>
+                {validationErrors.rabatt.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                Bitte gültigen Rabatt von 0 bis 1 angeben
+                </Typography>
+                )}
               </FormControl>
               <FormControl
                 fullWidth
@@ -161,6 +255,11 @@ function Create() {
                     sx={{ marginBottom: '1rem' }}
                   />
                 </Box>
+                {validationErrors.homepage.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                Bitte gültige Domain angeben
+                </Typography>
+                )}
               </FormControl>
           </Box>
           <Box width="45%">

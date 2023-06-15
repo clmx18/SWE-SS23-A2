@@ -128,7 +128,6 @@ export const login = async (username: string, password: string) => {
     };
 
     const loginResult: LoginResult = {
-        gotToken: false,
         errors: [],
     };
 
@@ -146,7 +145,6 @@ export const login = async (username: string, password: string) => {
                     sameSite: true,
                 });
                 loginResult.username = username;
-                loginResult.gotToken = true;
             }
             if (errors) {
                 const errMessage = errors

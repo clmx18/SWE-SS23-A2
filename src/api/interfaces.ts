@@ -52,7 +52,6 @@ export interface Buch {
 }
 
 export interface LoginResult {
-    gotToken: boolean;
     errors: string[];
     username?: string;
     expiresIn?: string;

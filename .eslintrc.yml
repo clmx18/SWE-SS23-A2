@@ -58,7 +58,6 @@ rules:
   func-names:
     - error
     - never
-  func-style: error
   getter-return: error
   grouped-accessor-pairs: error
   # siehe @typescript-eslint/key-spacing
@@ -79,10 +78,6 @@ rules:
       ignoreStrings: true
       ignoreTemplateLiterals: true
       ignoreUrls: true
-  max-lines: error
-  max-lines-per-function:
-    - error
-    - max: 60
   max-nested-callbacks:
     - error
     - max: 4
@@ -258,3 +253,5 @@ rules:
   yoda:
     - error
     - never
+  "@typescript-eslint/no-explicit-any": "off"
+  "react/react-in-jsx-scope": "off"

@@ -1,5 +1,10 @@
+import {
+    BuchInput,
+    BuchQueryField,
+    FilterParam,
+    LoginResult,
+} from './interfaces';
 import axios, { AxiosResponse } from 'axios';
-import { BuchInput, BuchQueryField, FilterParam, LoginResult } from './interfaces';
 import { buildQuery } from './queryBuilder';
 
 // TODO Nur zum testen. Token nicht in Variable speichern!!
@@ -131,7 +136,7 @@ export const login = async (username: string, password: string) => {
             }
             if (errors) {
                 const errMessage = errors
-                    .flatMap((err: any) => err.message)
+                    .flatMap((err: { message: string }) => err.message)
                     .toString();
                 loginResult.errors?.push(errMessage);
             }

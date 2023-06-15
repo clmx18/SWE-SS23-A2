@@ -1,6 +1,5 @@
 import { Alert, Box, Button, Snackbar, TextField } from '@mui/material';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect, useState } from 'react';
 import { login } from '../api/graphql';
 import { styled } from '@mui/material/styles';
 
@@ -22,7 +21,6 @@ const InputField = styled(TextField)({
   marginBottom: '16px',
 });
 
-// eslint-disable-next-line max-lines-per-function
 export default function Login() {
   const credentialsDefaultState = {
     username: '',
@@ -30,12 +28,12 @@ export default function Login() {
   };
 
   // useStates
-  const [credentials, setCredentials] = React.useState(credentialsDefaultState);
-  const [showSnackbar, setShowSnackbar] = React.useState(false);
-  const [error, setError] = React.useState<string | undefined>(undefined);
+  const [credentials, setCredentials] = useState(credentialsDefaultState);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   // useEffects
-  React.useEffect(() => {
+  useEffect(() => {
     setShowSnackbar(error !== undefined);
   }, [error]);
 

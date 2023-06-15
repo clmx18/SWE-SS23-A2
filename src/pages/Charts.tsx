@@ -1,8 +1,8 @@
-import { Grid } from '@mui/material';
 import * as Highcharts from 'highcharts';
-import { useEffect } from 'react';
-import { queryBuecher } from '../api/graphql';
 import { Buch, BuchQueryField } from '../api/interfaces';
+import { Grid } from '@mui/material';
+import { queryBuecher } from '../api/graphql';
+import { useEffect } from 'react';
 
 function Charts() {
   useEffect(() => {
@@ -119,12 +119,15 @@ function preparePieSeriesData(buecher: [Buch]) {
   return result;
 }
 function prepareBarSeriesData(buecher: [Buch]) {
-  const result: any = [[], []];
+  const result: Array<any> = [[], []];
 
   for (const buch of buecher) {
     if (buch.schlagwoerter && buch.schlagwoerter.length > 0) {
       for (const schlagwort of buch.schlagwoerter) {
-        if (schlagwort === 'null') continue;
+        if (schlagwort === 'null') {
+          // eslint-disable-next-line no-continue
+          continue;
+        }
 
         const index = result[0].findIndex(
           (element: string) => element === schlagwort,

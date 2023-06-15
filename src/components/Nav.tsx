@@ -1,29 +1,30 @@
+import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import Box from '@mui/material/Box';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import HomeIcon from '@mui/icons-material/Home';
-import LoginIcon from '@mui/icons-material/Login';
-import MenuIcon from '@mui/icons-material/Menu';
-import PeopleIcon from '@mui/icons-material/People';
-import SearchIcon from '@mui/icons-material/Search';
-import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
-import MuiDrawer from '@mui/material/Drawer';
+import HomeIcon from '@mui/icons-material/Home';
 import IconButton from '@mui/material/IconButton';
+import { Link } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import LoginIcon from '@mui/icons-material/Login';
+import MenuIcon from '@mui/icons-material/Menu';
+import MuiDrawer from '@mui/material/Drawer';
+import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
+import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
 import Toolbar from '@mui/material/Toolbar';
-import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { Typography } from '@mui/material';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
 const drawerWidth = 240;
 
@@ -98,7 +99,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Nav() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -137,7 +138,9 @@ export default function Nav() {
           >
             BookSearch
           </Typography>
-          <AutoStoriesIcon sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <AutoStoriesIcon
+            sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }}
+          />
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

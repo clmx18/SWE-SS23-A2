@@ -12,9 +12,8 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-
-import { useState } from 'react';
 import { createBuch } from '../api/graphql';
+import { useState } from 'react';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
@@ -28,11 +27,11 @@ function Create() {
     homepage: { isValid: undefined, errorMessage: '' },
     schlagwoerter: { isValid: undefined, errorMessage: '' },
   });
-  
+
   const [formValues, setFormValues] = useState({
     titel: {
       titel: '',
-      untertitel:''
+      untertitel: '',
     },
     isbn: '',
     rating: 0,
@@ -45,19 +44,27 @@ function Create() {
     schlagwoerter: [],
   });
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : type === 'number' ? parseFloat(value) : value;
-
-    validateInput(name, newValue);
-
-    setFormValues({ ...formValues, [name]: newValue });
-  };
-
-  const validateInput = (name, value) => {
+  const validateInput = (name: any, value: any) => {
     switch (name) {
       case 'isbn':
-        if (!/^(97[89])[- ][0-9]{1,2}[- ][0-9]{1,7}[- ][0-9]{1,6}[- ][0-9]$/.test(value)) {
+        if (
+          /^(97[89])[- ][0-9]{1,2}[- ][0-9]{1,7}[- ][0-9]{1,6}[- ][0-9]$/u.test(
+            value,
+          )
+        ) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        }
+        break;
+      case 'preis':
+        if (value === '' || !/^(?:\d+|\d+,\d{1,2})$/u.test(value)) {
           setValidationErrors((prevState) => ({
             ...prevState,
             [name]: { isValid: false },
@@ -69,78 +76,80 @@ function Create() {
           }));
         }
         break;
-        case 'preis':
-          if (value === '' || !/^(?:\d+|\d+,\d{1,2})$/.test(value)) {
-            setValidationErrors((prevState) => ({
-              ...prevState,
-              [name]: { isValid: false },
-            }));
-          } else {
-            setValidationErrors((prevState) => ({
-              ...prevState,
-              [name]: { isValid: true },
-            }));
-          }
-          break;
-          case 'rabatt':
-            if (value === '' || !/^(0(?:,000|,\d{3})?|1(?:,000)?|0,0[0-9]{2}|0,[0-9]{1,2})$/.test(value)) {
-              setValidationErrors((prevState) => ({
-                ...prevState,
-                [name]: { isValid: false },
-              }));
-            } else {
-              setValidationErrors((prevState) => ({
-                ...prevState,
-                [name]: { isValid: true },
-              }));
-            }
-            break;
-            case 'homepage':
-              if (!/^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/.test(value)) {
-                setValidationErrors((prevState) => ({
-                  ...prevState,
-                  [name]: { isValid: false },
-                }));
-              } else {
-                setValidationErrors((prevState) => ({
-                  ...prevState,
-                  [name]: { isValid: true },
-                }));
-              }
-              break;
+      case 'rabatt':
+        if (
+          value === '' ||
+          !/^(0(?:,000|,\d{3})?|1(?:,000)?|0,0[0-9]{2}|0,[0-9]{1,2})$/u.test(
+            value,
+          )
+        ) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        }
+        break;
+      case 'homepage':
+        if (/^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/u.test(value)) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        }
+        break;
       // Weitere `case`-Anweisungen für andere Validierungen können hier hinzugefügt werden
-    
+
       default:
         break;
     }
-    
   };
 
-  const handleRatingChange = (event, newValue) => {
+  const handleInputChange = (e: any) => {
+    const { name, value, type, checked } = e.target;
+    let newValue;
 
+    if (type === 'checkbox') {
+      newValue = checked;
+    } else if (type === 'number') {
+      newValue = parseFloat(value);
+    } else {
+      newValue = value;
+    }
+
+    validateInput(name, newValue);
+    setFormValues({ ...formValues, [name]: newValue });
+  };
+
+  const handleRatingChange = (newValue: any) => {
     validateInput('rating', newValue);
-
     setFormValues({ ...formValues, rating: newValue });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
       const response = await createBuch(formValues);
-  
+
       if (response.status === 200) {
         console.log('Buch erfolgreich erstellt:', response.data);
         setIsBookCreated(true);
       } else {
         console.log('Fehler beim Erstellen des Buchs:', response.data);
         setIsBookCreated(false);
-        
       }
     } catch (error: any) {
-      console.log('Fehler beim Erstellen des Buchs:', error);
+      console.log(`Fehler beim Erstellen des Buchs: ${error.message}`);
       setIsBookCreated(false);
-      const errorMessage = error.message;
-        alert(`Fehler beim Erstellen des Buchs: ${errorMessage}`);
     }
   };
   return (
@@ -163,104 +172,88 @@ function Create() {
                 <Input
                   type="text"
                   name="titel"
-                  value={formValues.titel}
+                  value={formValues.titel.titel}
                   onChange={handleInputChange}
                   sx={{ marginBottom: '1rem', marginLeft: '55px' }}
                 />
               </Box>
-              </FormControl>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{ marginLeft: '1rem' }}
-              >
-                <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
-                    ISBN
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    name="isbn"
-                    value={formValues.isbn}
-                    onChange={handleInputChange}
-                    sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
-                  />
-                </Box>
-                {validationErrors.isbn.isValid === false && (
+            </FormControl>
+            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+              <Box display="flex" alignItems="center">
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
+                  ISBN
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="isbn"
+                  value={formValues.isbn}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
+                />
+              </Box>
+              {validationErrors.isbn.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                Ungültige ISBN. Bitte ISBN 13 eingeben.
+                  Ungültige ISBN. Bitte ISBN 13 eingeben.
                 </Typography>
-                )}
-              </FormControl>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{ marginLeft: '1rem' }}
-              >
-                <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
-                    Preis
-                  </FormLabel>
-                  <Input
-                    type="number"
-                    name="preis"
-                    value={formValues.preis}
-                    onChange={handleInputChange}
-                    sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
-                  />
-                </Box>
-                {validationErrors.preis.isValid === false && (
+              )}
+            </FormControl>
+            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+              <Box display="flex" alignItems="center">
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
+                  Preis
+                </FormLabel>
+                <Input
+                  type="number"
+                  name="preis"
+                  value={formValues.preis}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
+                />
+              </Box>
+              {validationErrors.preis.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                Bitte gültigen Preis angeben
+                  Bitte gültigen Preis angeben
                 </Typography>
-                )}
-              </FormControl>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{ marginLeft: '1rem' }}
-              >
-                <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
-                    Rabatt
-                  </FormLabel>
-                  <Input
-                    type="number"
-                    name="rabatt"
-                    value={formValues.rabatt}
-                    onChange={handleInputChange}
-                    sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
-                  />
-                </Box>
-                {validationErrors.rabatt.isValid === false && (
+              )}
+            </FormControl>
+            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+              <Box display="flex" alignItems="center">
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
+                  Rabatt
+                </FormLabel>
+                <Input
+                  type="number"
+                  name="rabatt"
+                  value={formValues.rabatt}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '1rem', marginLeft: '2rem' }}
+                />
+              </Box>
+              {validationErrors.rabatt.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                Bitte gültigen Rabatt von 0 bis 1 angeben
+                  Bitte gültigen Rabatt von 0 bis 1 angeben
                 </Typography>
-                )}
-              </FormControl>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{ marginLeft: '1rem' }}
-              >
-                <Box display="flex" alignItems="center">
-                  <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
-                    Homepage
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    name="homepage"
-                    value={formValues.homepage}
-                    onChange={handleInputChange}
-                    sx={{ marginBottom: '1rem' }}
-                  />
-                </Box>
-                {validationErrors.homepage.isValid === false && (
+              )}
+            </FormControl>
+            <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
+              <Box display="flex" alignItems="center">
+                <FormLabel sx={{ marginLeft: '1rem', marginRight: '20px' }}>
+                  Homepage
+                </FormLabel>
+                <Input
+                  type="text"
+                  name="homepage"
+                  value={formValues.homepage}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '1rem' }}
+                />
+              </Box>
+              {validationErrors.homepage.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                Bitte gültige Domain angeben
+                  Bitte gültige Domain angeben
                 </Typography>
-                )}
-              </FormControl>
+              )}
+            </FormControl>
           </Box>
           <Box width="45%">
             <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
@@ -277,7 +270,11 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginBottom: '1rem', marginLeft: '1rem' }}>
+            <FormControl
+              fullWidth
+              margin="normal"
+              sx={{ marginBottom: '1rem', marginLeft: '1rem' }}
+            >
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '2rem' }}>
                   Datum
@@ -291,7 +288,11 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginTop: '2rem',marginLeft: '1rem' }}>
+            <FormControl
+              fullWidth
+              margin="normal"
+              sx={{ marginTop: '2rem', marginLeft: '1rem' }}
+            >
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
                   Rating
@@ -303,7 +304,11 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth margin="normal" sx={{ marginTop: '3rem', marginLeft: '1rem' }}>
+            <FormControl
+              fullWidth
+              margin="normal"
+              sx={{ marginTop: '3rem', marginLeft: '1rem' }}
+            >
               <Box display="flex" alignItems="center">
                 <FormLabel sx={{ marginLeft: '1rem', marginRight: '1rem' }}>
                   Lieferbar
@@ -321,45 +326,48 @@ function Create() {
                 />
               </Box>
             </FormControl>
-            <FormControl fullWidth sx={{ marginTop: '2rem',marginLeft: '2rem' }}>
-            <InputLabel id="art-select-label">Art</InputLabel>
-            <Select
-              labelId="art-select-label"
-              id="art-select"
-              label="Art"
-              name="art"
-              value={formValues.art}
-              onChange={handleInputChange}
-              style={{ marginBottom: '1rem'}}
+            <FormControl
+              fullWidth
+              sx={{ marginTop: '2rem', marginLeft: '2rem' }}
             >
-              <MenuItem value={'DRUCKAUSGABE'}>DRUCKAUSGABE</MenuItem>
-              <MenuItem value={'KINDLE'}>KINDLE</MenuItem>
-            </Select>
-          </FormControl>
+              <InputLabel id="art-select-label">Art</InputLabel>
+              <Select
+                labelId="art-select-label"
+                id="art-select"
+                label="Art"
+                name="art"
+                value={formValues.art}
+                onChange={handleInputChange}
+                style={{ marginBottom: '1rem' }}
+              >
+                <MenuItem value={'DRUCKAUSGABE'}>DRUCKAUSGABE</MenuItem>
+                <MenuItem value={'KINDLE'}>KINDLE</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
         </Box>
         <Box textAlign="center" marginTop="1rem">
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <Button
-            type="submit"
-            variant="contained"
-            onClick={handleSubmit}
-            style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
-          >
-            Buch erstellen
-          </Button>
-          {isBookCreated === true && (
-            <Typography variant="body1" sx={{ color: 'green' }}>
-              Buch erfolgreich erstellt
-            </Typography>
-          )}
-          {isBookCreated === false && (
-            <Typography variant="body1" sx={{ color: 'red' }}>
-              Fehler beim Erstellen des Buchs
-            </Typography>
-          )}
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Button
+              type="submit"
+              variant="contained"
+              onClick={handleSubmit}
+              style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
+            >
+              Buch erstellen
+            </Button>
+            {isBookCreated === true && (
+              <Typography variant="body1" sx={{ color: 'green' }}>
+                Buch erfolgreich erstellt
+              </Typography>
+            )}
+            {isBookCreated === false && (
+              <Typography variant="body1" sx={{ color: 'red' }}>
+                Fehler beim Erstellen des Buchs
+              </Typography>
+            )}
+          </Box>
         </Box>
-      </Box>
       </form>
     </Box>
   );

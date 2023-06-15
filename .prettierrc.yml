@@ -7,4 +7,3 @@ overrides:
       tabWidth: 4
 #Plugin to sort imports
 #https://www.npmjs.com/package/prettier-plugin-organize-imports
-organizeImportsSkipDestructiveCodeActions: true

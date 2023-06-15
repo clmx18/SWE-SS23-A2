@@ -72,6 +72,8 @@ export const buildQuery = (
                         }
                     `;
                     break;
+                default:
+                    break;
             }
         }
     } else {
@@ -108,11 +110,13 @@ export const buildQuery = (
                 case 'number':
                     p += `${queryFilter[index].key}: ${queryFilter[index].value}`;
                     break;
+                default:
+                    break;
             }
 
-            index < queryFilter.length - 1 && queryFilter.length > 1
-                ? (p += ', ')
-                : '';
+            if (index < queryFilter.length - 1 && queryFilter.length > 1) {
+                p += ', ';
+            }
         }
         filter = `buecher (${p})`;
     }

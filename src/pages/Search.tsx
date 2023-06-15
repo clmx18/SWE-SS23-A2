@@ -1,4 +1,4 @@
-import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import { Buch, BuchQueryField, FilterParam } from '../api/interfaces';
 import {
   Button,
   Card,
@@ -18,15 +18,10 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import { queryBuecher } from '../api/graphql';
-import { Buch, BuchQueryField, FilterParam } from '../api/interfaces';
 
 function Search() {
-  //Only run useEffect once
-  useEffect(() => {
-    fetchBuecher();
-  }, []);
-
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(undefined);
   const [filter, setFilter] = useState({
@@ -47,39 +42,40 @@ function Search() {
   };
 
   const handleFilterChange = (e: any) => {
-    const name = e.target.name;
+    const { name } = e.target;
     let value;
     switch (name) {
       case 'lieferbar':
         value = e.target.checked;
         break;
       case 'rating':
-        value = parseInt(e.target.value);
+        value = parseInt(e.target.value, 2);
         break;
       default:
+        // eslint-disable-next-line prefer-destructuring
         value = e.target.value;
+        break;
     }
     setFilter({ ...filter, [name]: value });
   };
-  const handleFilterSubmit = (e: any) => {
-    e.preventDefault();
-    fetchBuecher();
-  };
-
   const fetchBuecher = () => {
     setIsLoading(true);
     setIsError(undefined);
 
     const queryFilter: FilterParam[] = [];
 
-    if (filter.titel.length > 0)
+    if (filter.titel.length > 0) {
       queryFilter.push({ key: 'titel', value: filter.titel });
-    if (filter.art.length > 0)
+    }
+    if (filter.art.length > 0) {
       queryFilter.push({ key: 'art', value: filter.art });
-    if (filter.lieferbar)
+    }
+    if (filter.lieferbar) {
       queryFilter.push({ key: 'lieferbar', value: filter.lieferbar });
-    if (filter.rating > 0)
+    }
+    if (filter.rating > 0) {
       queryFilter.push({ key: 'rating', value: filter.rating });
+    }
 
     queryBuecher(
       [
@@ -92,7 +88,7 @@ function Search() {
       ],
       queryFilter,
     )
-      .then((result) => {
+      .then((result: any) => {
         setIsLoading(false);
 
         if (result.data.data.buecher) {
@@ -105,11 +101,21 @@ function Search() {
           setIsError(errorString);
         }
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setIsLoading(false);
         setIsError(err.message);
       });
   };
+
+  const handleFilterSubmit = (e: any) => {
+    e.preventDefault();
+    fetchBuecher();
+  };
+
+  //Only run useEffect once
+  useEffect(() => {
+    fetchBuecher();
+  }, []);
 
   return (
     <>
@@ -209,7 +215,9 @@ function Search() {
             ) : (
               false
             )}
-            {isError !== undefined ? (
+            {isError === undefined ? (
+              false
+            ) : (
               <Card
                 style={{
                   textAlign: 'center',
@@ -232,64 +240,60 @@ function Search() {
                   </Typography>
                 </CardContent>
               </Card>
-            ) : (
-              false
             )}
             {!isLoading && !isError && buecher.length > 0
-              ? buecher.map((buch: Buch) => {
-                  return (
-                    <Card
-                      style={{
-                        textAlign: 'left',
-                        marginBottom: '2rem',
-                        paddingLeft: '1rem',
-                      }}
-                      key={buch.id}
-                    >
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {buch.titel!.titel}
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="body1"
-                          component="div"
-                          style={{ marginLeft: '0.5rem' }}
-                        >
-                          <b>ISBN:</b> {buch.isbn}
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="body1"
-                          component="div"
-                          style={{ marginLeft: '0.5rem' }}
-                        >
-                          <b>ART:</b> {buch.art}
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="body1"
-                          component="div"
-                          style={{ marginLeft: '0.5rem' }}
-                        >
-                          <b>LIEFERBAR:</b>{' '}
-                          {buch.lieferbar === true ? 'Ja' : 'Nein'}
-                        </Typography>
-                        <Rating
-                          value={buch.rating}
-                          readOnly={true}
-                          sx={{ '& .MuiSvgIcon-root': { fontSize: 25 } }}
-                          style={{ marginLeft: '0.5rem' }}
-                        />
-                      </CardContent>
-                      <CardActions style={{ justifyContent: 'end' }}>
-                        <Button component={Link} to={`/search/${buch.id}`}>
-                          Details anzeigen
-                        </Button>
-                      </CardActions>
-                    </Card>
-                  );
-                })
+              ? buecher.map((buch: Buch) => (
+                  <Card
+                    style={{
+                      textAlign: 'left',
+                      marginBottom: '2rem',
+                      paddingLeft: '1rem',
+                    }}
+                    key={buch.id}
+                  >
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {buch.titel?.titel}
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="body1"
+                        component="div"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        <b>ISBN:</b> {buch.isbn}
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="body1"
+                        component="div"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        <b>ART:</b> {buch.art}
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="body1"
+                        component="div"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        <b>LIEFERBAR:</b>{' '}
+                        {buch.lieferbar === true ? 'Ja' : 'Nein'}
+                      </Typography>
+                      <Rating
+                        value={buch.rating}
+                        readOnly={true}
+                        sx={{ '& .MuiSvgIcon-root': { fontSize: 25 } }}
+                        style={{ marginLeft: '0.5rem' }}
+                      />
+                    </CardContent>
+                    <CardActions style={{ justifyContent: 'end' }}>
+                      <Button component={Link} to={`/search/${buch.id}`}>
+                        Details anzeigen
+                      </Button>
+                    </CardActions>
+                  </Card>
+                ))
               : false}
           </div>
         </Grid>

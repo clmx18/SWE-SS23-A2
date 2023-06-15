@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import App from './App';
 import './index.css';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import About from './pages/About';
+import App from './App';
 import Charts from './pages/Charts';
 import Create from './pages/Create';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import Search from './pages/Search';
 import SearchDetails from './pages/SearchDetails';
 

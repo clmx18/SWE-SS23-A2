@@ -2,13 +2,16 @@ import {
     BuchInput,
     BuchQueryField,
     FilterParam,
+    JwtTokenPayload,
     LoginResult,
 } from './interfaces';
 import axios, { AxiosResponse } from 'axios';
+import Cookies from 'universal-cookie';
 import { buildQuery } from './queryBuilder';
+import jwt from 'jwt-decode';
 
-// TODO Nur zum testen. Token nicht in Variable speichern!!
-let accessToken: string;
+const JWT_COOKIE_NAME = 'jwt_auth_cookie';
+const cookies = new Cookies();
 
 export const queryBuecher = async (
     queryFields?: BuchQueryField[],
@@ -22,7 +25,9 @@ export const queryBuecher = async (
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+            ...(cookies.get(JWT_COOKIE_NAME) && {
+                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            }),
         },
         data: {
             query,
@@ -60,7 +65,9 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+            ...(cookies.get(JWT_COOKIE_NAME) && {
+                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            }),
         },
         data: {
             query,
@@ -83,7 +90,9 @@ export const createBuch = async (buchData: BuchInput) => {
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+            ...(cookies.get(JWT_COOKIE_NAME) && {
+                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            }),
         },
         data: {
             query: mutation,
@@ -130,8 +139,13 @@ export const login = async (username: string, password: string) => {
             const { login } = data;
             if (login) {
                 const { token } = login;
-                // TODO Tokenspeicherort ersetzen
-                accessToken = token;
+                const decodedJwt = jwt<JwtTokenPayload>(token);
+                const { exp } = decodedJwt;
+                cookies.set(JWT_COOKIE_NAME, token, {
+                    expires: new Date(exp * 1000),
+                    sameSite: true,
+                });
+                loginResult.username = username;
                 loginResult.gotToken = true;
             }
             if (errors) {

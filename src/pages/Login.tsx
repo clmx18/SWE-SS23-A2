@@ -112,8 +112,9 @@ function LoggedIn() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    logout();
-    updateIsLoggedIn();
+    logout().then(() => {
+      updateIsLoggedIn();
+    });
   };
 
   return (

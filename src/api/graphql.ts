@@ -152,6 +152,6 @@ export const login = async (username: string, password: string) => {
     return loginResult;
 };
 
-export const logout = () => {
+export const logout = async () => {
     cookie.removeAuthCookie();
 };

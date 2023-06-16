@@ -11,20 +11,17 @@ const cookie = new Cookie();
 export const LoginProvider = ({ children }: any) => {
   const [username, setUsername] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState(undefined);
 
   const updateIsLoggedIn = () => {
     setIsLoggedIn(cookie.checkAuthCookie());
   };
 
   useEffect(() => {
-    if(!isLoggedIn) {
-      setUsername('');
-    }
-    else {
-      const { username } = cookie.getAuthCookie();
-      setUsername(username);
-    }
+    setUsername(isLoggedIn
+      ? cookie.getAuthCookie().username
+      : ''
+    );
   }, [isLoggedIn])
 
   return (

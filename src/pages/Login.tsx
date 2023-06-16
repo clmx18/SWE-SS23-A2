@@ -55,11 +55,10 @@ function LoggedOut() {
         updateIsLoggedIn();
       }
       if (errors.length > 0) {
-        let errMessage = '';
-        errors.forEach((error) => {
-          errMessage = `${error}\n${errMessage}`;
+        const errorListItems = errors.map((error) => {
+          return <li>{error}</li>;
         });
-        setError(errMessage);
+        setError(<ul>{errorListItems}</ul>);
       }
     });
     resetCredentials();

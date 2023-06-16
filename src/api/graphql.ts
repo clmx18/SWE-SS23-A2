@@ -9,8 +9,8 @@ import axios, { AxiosResponse } from 'axios';
 import Cookies from 'universal-cookie';
 import { buildQuery } from './queryBuilder';
 import jwt from 'jwt-decode';
+import { JWT_COOKIE_NAME } from './constants';
 
-const JWT_COOKIE_NAME = 'jwt_auth_cookie';
 const cookies = new Cookies();
 
 export const queryBuecher = async (
@@ -141,8 +141,11 @@ export const login = async (username: string, password: string) => {
                 const { exp } = decodedJwt;
                 cookies.set(JWT_COOKIE_NAME, token, {
                     expires: new Date(exp * 1000),
-                    sameSite: true,
+                    sameSite: 'strict',
                 });
+                if (!cookies.get(JWT_COOKIE_NAME)) {
+                    throw new Error('Login fehlgeschlagen');
+                }
                 loginResult.loggedIn = true;
                 loginResult.username = username;
             }
@@ -156,4 +159,8 @@ export const login = async (username: string, password: string) => {
         .catch((err) => loginResult.errors?.push(err.message));
 
     return loginResult;
+};
+
+export const logout = () => {
+    cookies.remove(JWT_COOKIE_NAME);
 };

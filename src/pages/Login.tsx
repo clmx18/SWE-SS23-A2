@@ -1,6 +1,6 @@
-import { Alert, Box, Button, Snackbar, TextField } from '@mui/material';
+import { Alert, Box, Button, Card, Snackbar, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
-import { login } from '../api/graphql';
+import { login, logout } from '../api/graphql';
 import { styled } from '@mui/material/styles';
 import LoginContext from '../context/LoginProvider';
 
@@ -28,7 +28,7 @@ function LoggedOut() {
     password: '',
   };
 
-  const { setError, setIsLoggedIn, setUsername } = useContext(LoginContext);
+  const { setError, updateIsLoggedIn, setUsername } = useContext(LoginContext);
 
   // useStates
   const [credentials, setCredentials] = useState(credentialsDefaultState);
@@ -52,7 +52,7 @@ function LoggedOut() {
     login(username, password).then((result) => {
       const { errors, username, loggedIn } = result;
       if (loggedIn) {
-        setIsLoggedIn(true);
+        updateIsLoggedIn();
         setUsername(username);
       }
       if (errors.length > 0) {
@@ -109,23 +109,25 @@ function LoggedOut() {
 }
 
 function LoggedIn() {
-  const { username, setIsLoggedIn } = useContext(LoginContext);
+  const { username, updateIsLoggedIn } = useContext(LoginContext);
 
-  const handleOnClick = () => {
-    setIsLoggedIn(false);
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    logout();
+    updateIsLoggedIn();
   };
 
   return (
-    <LoginForm>
+    <LoginForm onSubmit={handleSubmit}>
       <h2>Angemeldet</h2>
       <h4>als User '{username}'</h4>
       <Button
           fullWidth
+          type="submit"
           variant="contained"
-          onClick={handleOnClick}
           style={{ backgroundColor: '#DC143C' }}
       >
-        Logout
+        Abmelden
       </Button>
     </LoginForm>
   );
@@ -147,16 +149,22 @@ function Login() {
   return (
       <CenteredBox>
         <Snackbar
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={handleClose}
+          open={showSnackbar}
+          autoHideDuration={6000}
+          onClose={handleClose}
         >
           <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>
             {error}
           </Alert>
         </Snackbar>
-        { isLoggedIn && <LoggedIn /> }
-        { !isLoggedIn && <LoggedOut /> }
+        <Card style={{
+                  textAlign: 'center',
+                  marginBottom: '2rem',
+                  padding: '1rem',
+                }}>
+          { isLoggedIn && <LoggedIn /> }
+          { !isLoggedIn && <LoggedOut /> }
+        </Card>
       </CenteredBox>
   );
 }

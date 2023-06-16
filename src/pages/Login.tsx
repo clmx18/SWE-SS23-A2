@@ -134,13 +134,17 @@ function LoggedIn() {
 }
 
 function Login() {
-  const { error, setError, isLoggedIn } = useContext(LoginContext);
+  const { error, setError, isLoggedIn, updateIsLoggedIn } = useContext(LoginContext);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   // useEffects
   useEffect(() => {
     setShowSnackbar(error !== undefined);
   }, [error]);
+
+  useEffect(() => {
+    updateIsLoggedIn()
+  }, []);
 
   const handleClose = () => {
     setError(undefined);

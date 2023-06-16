@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { createBuch } from '../api/graphql';
 import { useState } from 'react';
+import { BuchInput, TitelInput } from '../api/interfaces';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
@@ -28,10 +29,13 @@ function Create() {
     schlagwoerter: { isValid: undefined, errorMessage: '' },
   });
 
-  const [formValues, setFormValues] = useState({
+  const [titelInput, setTitelInput] = useState<TitelInput>({
+    titel: '',
+  });
+
+  const [formValues, setFormValues] = useState<BuchInput>({
     titel: {
       titel: '',
-      untertitel: '',
     },
     isbn: '',
     rating: 0,
@@ -114,6 +118,12 @@ function Create() {
     }
   };
 
+  const handleTitelChange = (e: any) => {
+    const { name, value } = e.target;
+    validateInput(name, value);
+    setTitelInput({ ...titelInput, [name]: value });
+  };
+
   const handleInputChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     let newValue;
@@ -130,14 +140,17 @@ function Create() {
     setFormValues({ ...formValues, [name]: newValue });
   };
 
-  const handleRatingChange = (newValue: any) => {
-    validateInput('rating', newValue);
-    setFormValues({ ...formValues, rating: newValue });
+  const handleRatingChange = (e: any) => {
+    const { name, value } = e.target;
+    const newValue = parseInt(value);
+    validateInput(name, newValue);
+    setFormValues({ ...formValues, [name]: newValue });
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      formValues.titel = titelInput;
       const response = await createBuch(formValues);
 
       if (response.status === 200) {
@@ -172,8 +185,8 @@ function Create() {
                 <Input
                   type="text"
                   name="titel"
-                  value={formValues.titel.titel}
-                  onChange={handleInputChange}
+                  value={titelInput.titel}
+                  onChange={handleTitelChange}
                   sx={{ marginBottom: '1rem', marginLeft: '55px' }}
                 />
               </Box>
@@ -298,6 +311,7 @@ function Create() {
                   Rating
                 </FormLabel>
                 <Rating
+                  name="rating"
                   value={formValues.rating}
                   onChange={handleRatingChange}
                   sx={{ marginLeft: '4rem' }}

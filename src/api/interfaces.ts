@@ -28,9 +28,12 @@ export interface BuchInput {
     datum?: string;
     homepage?: string;
     schlagwoerter?: string[];
-    titel?: {
-        titel?: string;
-    };
+    titel?: TitelInput;
+}
+
+export interface TitelInput {
+    titel: string;
+    untertitel?: string;
 }
 
 export interface Buch {

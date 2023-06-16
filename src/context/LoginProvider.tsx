@@ -1,10 +1,9 @@
-import { createContext, useState } from 'react';
-import Cookies from 'universal-cookie';
-import { JWT_COOKIE_NAME } from '../api/constants';
+import { createContext, useEffect, useState } from 'react';
+import Cookie from '../api/cookie';
 
 const LoginContext = createContext({});
 
-const cookies = new Cookies();
+const cookie = new Cookie();
 
 export const LoginProvider = ({ children }: any) => {
   const [username, setUsername] = useState('');
@@ -12,8 +11,18 @@ export const LoginProvider = ({ children }: any) => {
   const [error, setError] = useState<string | undefined>(undefined);
 
   const updateIsLoggedIn = () => {
-    setIsLoggedIn(cookies.get(JWT_COOKIE_NAME) !== undefined);
+    setIsLoggedIn(cookie.checkAuthCookie());
   };
+
+  useEffect(() => {
+    if(!isLoggedIn) {
+      setUsername('');
+    }
+    else {
+      const { username } = cookie.getAuthCookie();
+      setUsername(username);
+    }
+  }, [isLoggedIn])
 
   return (
     <LoginContext.Provider value={{ username, setUsername, isLoggedIn, updateIsLoggedIn, error, setError }}>

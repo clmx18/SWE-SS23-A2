@@ -54,7 +54,6 @@ export interface Buch {
 export interface LoginResult {
     errors: string[];
     loggedIn: boolean;
-    username?: string;
     expiresIn?: string;
     issuer?: string;
 }
@@ -72,4 +71,9 @@ export interface JwtTokenPayload {
     iat: number;
     exp: number;
     iss: string;
+}
+
+export interface JwtCookiePayload {
+    token: string;
+    username: string;
 }

@@ -2,16 +2,13 @@ import {
     BuchInput,
     BuchQueryField,
     FilterParam,
-    JwtTokenPayload,
     LoginResult,
 } from './interfaces';
 import axios, { AxiosResponse } from 'axios';
-import Cookies from 'universal-cookie';
 import { buildQuery } from './queryBuilder';
-import jwt from 'jwt-decode';
-import { JWT_COOKIE_NAME } from './constants';
+import Cookie from './cookie';
 
-const cookies = new Cookies();
+const cookie = new Cookie();
 
 export const queryBuecher = async (
     queryFields?: BuchQueryField[],
@@ -25,8 +22,8 @@ export const queryBuecher = async (
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(cookies.get(JWT_COOKIE_NAME) && {
-                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            ...(cookie.checkAuthCookie() && {
+                Authorization: `Bearer ${cookie.getAuthCookie().token}`,
             }),
         },
         data: {
@@ -63,8 +60,8 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(cookies.get(JWT_COOKIE_NAME) && {
-                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            ...(cookie.checkAuthCookie() && {
+                Authorization: `Bearer ${cookie.getAuthCookie().token}`,
             }),
         },
         data: {
@@ -88,8 +85,8 @@ export const createBuch = async (buchData: BuchInput) => {
         headers: {
             'Content-Type': 'application/json',
             'X-REQUEST-TYPE': 'GraphQL',
-            ...(cookies.get(JWT_COOKIE_NAME) && {
-                Authorization: `Bearer ${cookies.get(JWT_COOKIE_NAME)}`,
+            ...(cookie.checkAuthCookie() && {
+                Authorization: `Bearer ${cookie.getAuthCookie().token}`,
             }),
         },
         data: {
@@ -137,17 +134,11 @@ export const login = async (username: string, password: string) => {
             const { login } = data;
             if (login) {
                 const { token } = login;
-                const decodedJwt = jwt<JwtTokenPayload>(token);
-                const { exp } = decodedJwt;
-                cookies.set(JWT_COOKIE_NAME, token, {
-                    expires: new Date(exp * 1000),
-                    sameSite: 'strict',
-                });
-                if (!cookies.get(JWT_COOKIE_NAME)) {
+                const loggedIn = cookie.setAuthCookie(token);
+                if (!loggedIn) {
                     throw new Error('Login fehlgeschlagen');
                 }
-                loginResult.loggedIn = true;
-                loginResult.username = username;
+                loginResult.loggedIn = loggedIn;
             }
             if (errors) {
                 const errMessage = errors
@@ -162,5 +153,5 @@ export const login = async (username: string, password: string) => {
 };
 
 export const logout = () => {
-    cookies.remove(JWT_COOKIE_NAME);
+    cookie.removeAuthCookie();
 };

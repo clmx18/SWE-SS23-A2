@@ -28,7 +28,7 @@ function LoggedOut() {
     password: '',
   };
 
-  const { setError, updateIsLoggedIn, setUsername } = useContext(LoginContext);
+  const { setError, updateIsLoggedIn } = useContext(LoginContext);
 
   // useStates
   const [credentials, setCredentials] = useState(credentialsDefaultState);
@@ -50,10 +50,9 @@ function LoggedOut() {
     // Handle form submission logic here
     const { username, password } = credentials;
     login(username, password).then((result) => {
-      const { errors, username, loggedIn } = result;
+      const { errors, loggedIn } = result;
       if (loggedIn) {
         updateIsLoggedIn();
-        setUsername(username);
       }
       if (errors.length > 0) {
         let errMessage = '';

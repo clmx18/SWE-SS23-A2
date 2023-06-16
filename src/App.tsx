@@ -1,12 +1,15 @@
 import './App.css';
 import Nav from './components/Nav';
 import { Outlet } from 'react-router-dom';
+import LoginProvider from './context/LoginContext';
 
 function App() {
   return (
     <>
-      <Nav></Nav>
-      <Outlet />
+      <LoginProvider>
+        <Nav></Nav>
+        <Outlet />
+      </LoginProvider>
     </>
   );
 }

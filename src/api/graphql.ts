@@ -57,8 +57,6 @@ export const queryBuch = async (id: string): Promise<AxiosResponse> => {
         }
     }`;
 
-    console.log(accessToken);
-
     const options = {
         method: 'POST',
         url: '/api',

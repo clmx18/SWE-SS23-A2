@@ -53,6 +53,7 @@ export interface Buch {
 
 export interface LoginResult {
     errors: string[];
+    loggedIn: boolean;
     username?: string;
     expiresIn?: string;
     issuer?: string;

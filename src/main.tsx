@@ -11,6 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Search from './pages/Search';
 import SearchDetails from './pages/SearchDetails';
+import { LoginProvider } from './context/LoginProvider';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <Login />,
+        element: <LoginProvider><Login /></LoginProvider>,
       },
       {
         path: 'search',

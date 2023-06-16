@@ -126,6 +126,7 @@ export const login = async (username: string, password: string) => {
     };
 
     const loginResult: LoginResult = {
+        loggedIn: false,
         errors: [],
     };
 
@@ -142,6 +143,7 @@ export const login = async (username: string, password: string) => {
                     expires: new Date(exp * 1000),
                     sameSite: true,
                 });
+                loginResult.loggedIn = true;
                 loginResult.username = username;
             }
             if (errors) {

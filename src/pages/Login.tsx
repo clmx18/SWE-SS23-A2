@@ -1,7 +1,8 @@
 import { Alert, Box, Button, Snackbar, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { login } from '../api/graphql';
 import { styled } from '@mui/material/styles';
+import LoginContext from '../context/LoginProvider';
 
 const CenteredBox = styled(Box)({
   display: 'flex',
@@ -21,21 +22,16 @@ const InputField = styled(TextField)({
   marginBottom: '16px',
 });
 
-export default function Login() {
+function LoggedOut() {
   const credentialsDefaultState = {
     username: '',
     password: '',
   };
 
+  const { setError, setIsLoggedIn, setUsername } = useContext(LoginContext);
+
   // useStates
   const [credentials, setCredentials] = useState(credentialsDefaultState);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-
-  // useEffects
-  useEffect(() => {
-    setShowSnackbar(error !== undefined);
-  }, [error]);
 
   const resetCredentials = () => {
     setCredentials(credentialsDefaultState);
@@ -49,16 +45,16 @@ export default function Login() {
     }));
   };
 
-  const handleClose = () => {
-    setError(undefined);
-  };
-
   const handleSubmit = (event: any) => {
     event.preventDefault();
     // Handle form submission logic here
     const { username, password } = credentials;
     login(username, password).then((result) => {
-      const { errors } = result;
+      const { errors, username, loggedIn } = result;
+      if (loggedIn) {
+        setIsLoggedIn(true);
+        setUsername(username);
+      }
       if (errors.length > 0) {
         let errMessage = '';
         errors.forEach((error) => {
@@ -71,16 +67,7 @@ export default function Login() {
   };
 
   return (
-    <CenteredBox>
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={handleClose}
-      >
-        <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+    <>
       <LoginForm onSubmit={handleSubmit}>
         <h2>Login</h2>
         <InputField
@@ -117,6 +104,61 @@ export default function Login() {
           Anmelden
         </Button>
       </LoginForm>
-    </CenteredBox>
+    </>
   );
 }
+
+function LoggedIn() {
+  const { username, setIsLoggedIn } = useContext(LoginContext);
+
+  const handleOnClick = () => {
+    setIsLoggedIn(false);
+  };
+
+  return (
+    <LoginForm>
+      <h2>Angemeldet</h2>
+      <h4>als User '{username}'</h4>
+      <Button
+          fullWidth
+          variant="contained"
+          onClick={handleOnClick}
+          style={{ backgroundColor: '#DC143C' }}
+      >
+        Logout
+      </Button>
+    </LoginForm>
+  );
+}
+
+function Login() {
+  const { error, setError, isLoggedIn } = useContext(LoginContext);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+
+  // useEffects
+  useEffect(() => {
+    setShowSnackbar(error !== undefined);
+  }, [error]);
+
+  const handleClose = () => {
+    setError(undefined);
+  };
+
+  return (
+      <CenteredBox>
+        <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        >
+          <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>
+            {error}
+          </Alert>
+        </Snackbar>
+        { isLoggedIn && <LoggedIn /> }
+        { !isLoggedIn && <LoggedOut /> }
+      </CenteredBox>
+  );
+}
+
+export default Login;

@@ -18,6 +18,10 @@ export enum BuchQueryField {
     'titel',
 }
 
+export interface TitelInput {
+    titel: string;
+    untertitel?: string;
+}
 export interface BuchInput {
     isbn: string;
     rating?: number;
@@ -29,11 +33,6 @@ export interface BuchInput {
     homepage?: string;
     schlagwoerter?: string[];
     titel?: TitelInput;
-}
-
-export interface TitelInput {
-    titel: string;
-    untertitel?: string;
 }
 
 export interface Buch {

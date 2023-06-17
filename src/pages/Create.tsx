@@ -12,6 +12,7 @@ import {
   Select,
   Typography,
 } from '@mui/material';
+import { parse as parseIsbn } from 'isbn-utils';
 import { createBuch } from '../api/graphql';
 import { useState } from 'react';
 import { BuchInput, TitelInput } from '../api/interfaces';
@@ -40,7 +41,7 @@ function Create() {
     isbn: '',
     rating: 0,
     art: 'DRUCKAUSGABE',
-    preis: 0,
+    preis: 1.11,
     rabatt: 0,
     lieferbar: false,
     datum: undefined,
@@ -51,7 +52,7 @@ function Create() {
   const validateInput = (name: any, value: any) => {
     switch (name) {
       case 'titel':
-        if (/^^\\w.*$/u.test(value)) {
+        if (/^^\\w*$/u.test(value)) {
           setValidationErrors((prevState) => ({
             ...prevState,
             [name]: { isValid: true },
@@ -64,11 +65,9 @@ function Create() {
         }
         break;
       case 'isbn':
-        if (
-          /^(97[89])[- ][0-9]{1,2}[- ][0-9]{1,7}[- ][0-9]{1,6}[- ][0-9]$/u.test(
-            value,
-          )
-        ) {
+        // eslint-disable-next-line no-case-declarations
+        const isbn = parseIsbn(value);
+        if (isbn && isbn.isIsbn13()) {
           setValidationErrors((prevState) => ({
             ...prevState,
             [name]: { isValid: true },

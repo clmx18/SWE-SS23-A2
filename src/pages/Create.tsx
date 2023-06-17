@@ -39,17 +39,30 @@ function Create() {
     },
     isbn: '',
     rating: 0,
-    art: '',
+    art: 'DRUCKAUSGABE',
     preis: 0,
     rabatt: 0,
     lieferbar: false,
-    datum: '',
-    homepage: '',
+    datum: undefined,
+    homepage: undefined,
     schlagwoerter: [],
   });
 
   const validateInput = (name: any, value: any) => {
     switch (name) {
+      case 'titel':
+        if (/^^\\w.*$/u.test(value)) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        }
+        break;
       case 'isbn':
         if (
           /^(97[89])[- ][0-9]{1,2}[- ][0-9]{1,7}[- ][0-9]{1,6}[- ][0-9]$/u.test(
@@ -190,6 +203,11 @@ function Create() {
                   sx={{ marginBottom: '1rem', marginLeft: '55px' }}
                 />
               </Box>
+              {validationErrors.titel.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                  Ungültiger Titel
+                </Typography>
+              )}
             </FormControl>
             <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
@@ -206,7 +224,7 @@ function Create() {
               </Box>
               {validationErrors.isbn.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültige ISBN. Bitte ISBN 13 eingeben.
+                  Ungültige ISBN
                 </Typography>
               )}
             </FormControl>
@@ -225,7 +243,7 @@ function Create() {
               </Box>
               {validationErrors.preis.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Bitte gültigen Preis angeben
+                  Ungültiger Preis
                 </Typography>
               )}
             </FormControl>
@@ -244,7 +262,7 @@ function Create() {
               </Box>
               {validationErrors.rabatt.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Bitte gültigen Rabatt von 0 bis 1 angeben
+                  Ungültiger Rabatt
                 </Typography>
               )}
             </FormControl>
@@ -263,7 +281,7 @@ function Create() {
               </Box>
               {validationErrors.homepage.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Bitte gültige Domain angeben
+                  Ungültige URL
                 </Typography>
               )}
             </FormControl>

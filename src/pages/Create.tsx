@@ -56,6 +56,11 @@ function Create() {
     schlagwoerter: [],
   });
 
+  const splitSchlagwoerter = () => {
+    const splittedSchlagwoerter = schlagwoerter.split(',');
+    return splittedSchlagwoerter.map((wort) => wort.trim());
+  };
+
   function checkIfEmpty() {
     const newValue = empty;
     if (titelInput.titel === '') {
@@ -70,48 +75,36 @@ function Create() {
     }
     setEmpty({ ...empty, ...newValue });
   }
+  const setValidation = (name: string, isValid: boolean) => {
+    setValidationErrors((prevState) => ({
+      ...prevState,
+      [name]: { isValid },
+    }));
+  };
 
   const validateInput = (name: any, value: any) => {
     switch (name) {
       case 'titel':
         if (/^\w.*$/u.test(value)) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
       case 'isbn':
         // eslint-disable-next-line no-case-declarations
         const isbn = parseIsbn(value);
         if (isbn && isbn.isIsbn13()) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
       case 'preis':
         if (/^[1-9]\d*(?:\.\d{1,2})?$/u.test(value)) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
       case 'rabatt':
@@ -120,15 +113,9 @@ function Create() {
             value,
           )
         ) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
       case 'homepage':
@@ -138,28 +125,16 @@ function Create() {
             value,
           )
         ) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
       case 'schlagwoerter':
         if (/^(\w*)?(,\s?(\w*))*$/u.test(value)) {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: true },
-          }));
+          setValidation(name, true);
         } else {
-          setValidationErrors((prevState) => ({
-            ...prevState,
-            [name]: { isValid: false },
-          }));
+          setValidation(name, false);
         }
         break;
 
@@ -180,6 +155,13 @@ function Create() {
     setSchlagwoerter(value);
   };
 
+  const handleRatingChange = (e: any) => {
+    const { name, value } = e.target;
+    const newValue = parseInt(value, 10);
+    validateInput(name, newValue);
+    setFormValues({ ...formValues, [name]: newValue });
+  };
+
   const handleInputChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     let newValue;
@@ -194,18 +176,6 @@ function Create() {
 
     validateInput(name, newValue);
     setFormValues({ ...formValues, [name]: newValue });
-  };
-
-  const handleRatingChange = (e: any) => {
-    const { name, value } = e.target;
-    const newValue = parseInt(value, 10);
-    validateInput(name, newValue);
-    setFormValues({ ...formValues, [name]: newValue });
-  };
-
-  const splitSchlagwoerter = () => {
-    const splittedSchlagwoerter = schlagwoerter.split(',');
-    return splittedSchlagwoerter.map((wort) => wort.trim());
   };
 
   const handleSubmit = async (e: any) => {

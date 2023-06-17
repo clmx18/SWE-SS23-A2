@@ -5,8 +5,8 @@ import {
     LoginResult,
 } from './interfaces';
 import axios, { AxiosResponse } from 'axios';
-import { buildQuery } from './queryBuilder';
 import Cookie from './cookie';
+import { buildQuery } from './queryBuilder';
 
 const cookie = new Cookie();
 
@@ -92,7 +92,7 @@ export const createBuch = async (buchData: BuchInput) => {
         data: {
             query: mutation,
             variables: {
-                buchData: buchData,
+                buchData,
             },
         },
     };

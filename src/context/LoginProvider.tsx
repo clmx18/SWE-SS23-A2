@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from 'react';
 import Cookie from '../api/cookie';
 
-// defaultValue wird hier gesondert erzeugt, um ihm explizit den Typ 'any' geben zu können. 
-// Damit werden in den nutzenden Komponenten keine verwirrenden TS-Fehler mehr angezeigt. 
+// defaultValue wird hier gesondert erzeugt, um ihm explizit den Typ 'any' geben zu können.
+// Damit werden in den nutzenden Komponenten keine verwirrenden TS-Fehler mehr angezeigt.
 const defaultValue: any = {};
 const LoginContext = createContext(defaultValue);
 
@@ -18,17 +18,23 @@ export const LoginProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    setUsername(isLoggedIn
-      ? cookie.getAuthCookie().username
-      : ''
-    );
-  }, [isLoggedIn])
+    setUsername(isLoggedIn ? cookie.getAuthCookie().username : '');
+  }, [isLoggedIn]);
 
   return (
-    <LoginContext.Provider value={{ username, setUsername, isLoggedIn, updateIsLoggedIn, error, setError }}>
+    <LoginContext.Provider
+      value={{
+        username,
+        setUsername,
+        isLoggedIn,
+        updateIsLoggedIn,
+        error,
+        setError,
+      }}
+    >
       {children}
     </LoginContext.Provider>
-  )
-}
+  );
+};
 
 export default LoginContext;

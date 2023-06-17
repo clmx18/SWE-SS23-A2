@@ -49,7 +49,7 @@ function Search() {
         value = e.target.checked;
         break;
       case 'rating':
-        value = parseInt(e.target.value);
+        value = parseInt(e.target.value, 10);
         break;
       default:
         // eslint-disable-next-line prefer-destructuring

@@ -1,8 +1,8 @@
 import { Alert, Box, Button, Card, Snackbar, TextField } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
 import { login, logout } from '../api/graphql';
-import { styled } from '@mui/material/styles';
+import { useContext, useEffect, useState } from 'react';
 import LoginContext from '../context/LoginProvider';
+import { styled } from '@mui/material/styles';
 
 const CenteredBox = styled(Box)({
   display: 'flex',
@@ -55,9 +55,9 @@ function LoggedOut() {
         updateIsLoggedIn();
       }
       if (errors.length > 0) {
-        const errorListItems = errors.map((error) => {
-          return <li>{error}</li>;
-        });
+        const errorListItems = errors.map((error) => (
+          <li key={error}>{error}</li>
+        ));
         setError(<ul>{errorListItems}</ul>);
       }
     });
@@ -119,12 +119,12 @@ function LoggedIn() {
   return (
     <LoginForm onSubmit={handleSubmit}>
       <h2>Angemeldet</h2>
-      <h4>als User '{username}'</h4>
+      <h4>als User &apos;{username}&apos;</h4>
       <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          style={{ backgroundColor: '#DC143C' }}
+        fullWidth
+        type="submit"
+        variant="contained"
+        style={{ backgroundColor: '#DC143C' }}
       >
         Abmelden
       </Button>
@@ -133,7 +133,8 @@ function LoggedIn() {
 }
 
 function Login() {
-  const { error, setError, isLoggedIn, updateIsLoggedIn } = useContext(LoginContext);
+  const { error, setError, isLoggedIn, updateIsLoggedIn } =
+    useContext(LoginContext);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   // useEffects
@@ -142,7 +143,7 @@ function Login() {
   }, [error]);
 
   useEffect(() => {
-    updateIsLoggedIn()
+    updateIsLoggedIn();
   }, []);
 
   const handleClose = () => {
@@ -150,25 +151,27 @@ function Login() {
   };
 
   return (
-      <CenteredBox>
-        <Snackbar
-          open={showSnackbar}
-          autoHideDuration={6000}
-          onClose={handleClose}
-        >
-          <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>
-            {error}
-          </Alert>
-        </Snackbar>
-        <Card style={{
-                  textAlign: 'center',
-                  marginBottom: '2rem',
-                  padding: '1rem',
-                }}>
-          { isLoggedIn && <LoggedIn /> }
-          { !isLoggedIn && <LoggedOut /> }
-        </Card>
-      </CenteredBox>
+    <CenteredBox>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert severity="error" onClose={handleClose} sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+      <Card
+        style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+          padding: '1rem',
+        }}
+      >
+        {isLoggedIn && <LoggedIn />}
+        {!isLoggedIn && <LoggedOut />}
+      </Card>
+    </CenteredBox>
   );
 }
 

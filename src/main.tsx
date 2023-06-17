@@ -6,12 +6,12 @@ import Charts from './pages/Charts';
 import Create from './pages/Create';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import { LoginProvider } from './context/LoginProvider';
 import NotFound from './pages/NotFound';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Search from './pages/Search';
 import SearchDetails from './pages/SearchDetails';
-import { LoginProvider } from './context/LoginProvider';
 
 const router = createBrowserRouter([
   {

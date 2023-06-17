@@ -1,5 +1,6 @@
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import { useContext, useState } from 'react';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
@@ -16,7 +17,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import LoginContext from '../context/LoginProvider';
 import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiDrawer from '@mui/material/Drawer';
 import PeopleIcon from '@mui/icons-material/People';
@@ -24,7 +27,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
 
 const drawerWidth = 240;
 
@@ -100,6 +102,8 @@ const Drawer = styled(MuiDrawer, {
 export default function Nav() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+
+  const { isLoggedIn } = useContext(LoginContext);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -292,9 +296,13 @@ export default function Nav() {
                   justifyContent: 'center',
                 }}
               >
-                <LoginIcon />
+                {isLoggedIn && <LogoutIcon />}
+                {!isLoggedIn && <LoginIcon />}
               </ListItemIcon>
-              <ListItemText primary="Login" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText
+                primary={isLoggedIn ? 'Logout' : 'Login'}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
             </ListItemButton>
           </ListItem>
           <ListItem

@@ -202,7 +202,7 @@ function SearchDetails() {
                 style={{ marginLeft: '0.5rem' }}
               >
                 <b>HOMEPAGE:</b> {''}
-                <Link to="">{buch.homepage}</Link>
+                <Link to={buch.homepage}>{buch.homepage}</Link>
               </Typography>
 
               <Typography

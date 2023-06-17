@@ -12,27 +12,34 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-import { parse as parseIsbn } from 'isbn-utils';
-import { createBuch } from '../api/graphql';
-import { useState } from 'react';
 import { BuchInput, TitelInput } from '../api/interfaces';
+import { createBuch } from '../api/graphql';
+import { parse as parseIsbn } from 'isbn-utils';
+import { useState } from 'react';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
   const [validationErrors, setValidationErrors] = useState({
-    titel: { isValid: undefined, errorMessage: '' },
-    isbn: { isValid: undefined, errorMessage: '' },
-    rating: { isValid: undefined, errorMessage: '' },
-    art: { isValid: undefined, errorMessage: '' },
-    preis: { isValid: undefined, errorMessage: '' },
-    rabatt: { isValid: undefined, errorMessage: '' },
-    homepage: { isValid: undefined, errorMessage: '' },
-    schlagwoerter: { isValid: undefined, errorMessage: '' },
+    titel: { isValid: undefined },
+    isbn: { isValid: undefined },
+    rating: { isValid: undefined },
+    art: { isValid: undefined },
+    preis: { isValid: undefined },
+    rabatt: { isValid: undefined },
+    homepage: { isValid: undefined },
+    schlagwoerter: { isValid: undefined },
+  });
+
+  const [empty, setEmpty] = useState({
+    titel: { isEmpty: false },
+    isbn: { isEmpty: false },
   });
 
   const [titelInput, setTitelInput] = useState<TitelInput>({
     titel: '',
   });
+
+  const [schlagwoerter, setSchlagwoerter] = useState<string>('');
 
   const [formValues, setFormValues] = useState<BuchInput>({
     titel: {
@@ -49,10 +56,25 @@ function Create() {
     schlagwoerter: [],
   });
 
+  function checkIfEmpty() {
+    const newValue = empty;
+    if (titelInput.titel === '') {
+      newValue.titel = { isEmpty: true };
+    } else {
+      newValue.titel = { isEmpty: false };
+    }
+    if (formValues.isbn === '') {
+      newValue.isbn = { isEmpty: true };
+    } else {
+      newValue.isbn = { isEmpty: false };
+    }
+    setEmpty({ ...empty, ...newValue });
+  }
+
   const validateInput = (name: any, value: any) => {
     switch (name) {
       case 'titel':
-        if (/^^\\w*$/u.test(value)) {
+        if (/^\w.*$/u.test(value)) {
           setValidationErrors((prevState) => ({
             ...prevState,
             [name]: { isValid: true },
@@ -80,38 +102,42 @@ function Create() {
         }
         break;
       case 'preis':
-        if (value === '' || !/^(?:\d+|\d+,\d{1,2})$/u.test(value)) {
+        if (/^[1-9]\d*(?:\.\d{1,2})?$/u.test(value)) {
           setValidationErrors((prevState) => ({
             ...prevState,
-            [name]: { isValid: false },
+            [name]: { isValid: true },
           }));
         } else {
           setValidationErrors((prevState) => ({
             ...prevState,
-            [name]: { isValid: true },
+            [name]: { isValid: false },
           }));
         }
         break;
       case 'rabatt':
         if (
-          value === '' ||
-          !/^(0(?:,000|,\d{3})?|1(?:,000)?|0,0[0-9]{2}|0,[0-9]{1,2})$/u.test(
+          /^(0(?:.000|.\d{3})?|1(?:.000)?|0.0[0-9]{2}|0.[0-9]{1,2})$/u.test(
             value,
           )
         ) {
           setValidationErrors((prevState) => ({
             ...prevState,
-            [name]: { isValid: false },
+            [name]: { isValid: true },
           }));
         } else {
           setValidationErrors((prevState) => ({
             ...prevState,
-            [name]: { isValid: true },
+            [name]: { isValid: false },
           }));
         }
         break;
       case 'homepage':
-        if (/^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/u.test(value)) {
+        if (
+          // eslint-disable-next-line max-len
+          /^((?:http)s?:\/\/)?([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/u.test(
+            value,
+          )
+        ) {
           setValidationErrors((prevState) => ({
             ...prevState,
             [name]: { isValid: true },
@@ -123,7 +149,19 @@ function Create() {
           }));
         }
         break;
-      // Weitere `case`-Anweisungen für andere Validierungen können hier hinzugefügt werden
+      case 'schlagwoerter':
+        if (/^(\w*)?(,\s?(\w*))*$/u.test(value)) {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: true },
+          }));
+        } else {
+          setValidationErrors((prevState) => ({
+            ...prevState,
+            [name]: { isValid: false },
+          }));
+        }
+        break;
 
       default:
         break;
@@ -134,6 +172,12 @@ function Create() {
     const { name, value } = e.target;
     validateInput(name, value);
     setTitelInput({ ...titelInput, [name]: value });
+  };
+
+  const handleSchlagwoerterChange = (e: any) => {
+    const { name, value } = e.target;
+    validateInput(name, value);
+    setSchlagwoerter(value);
   };
 
   const handleInputChange = (e: any) => {
@@ -154,26 +198,32 @@ function Create() {
 
   const handleRatingChange = (e: any) => {
     const { name, value } = e.target;
-    const newValue = parseInt(value);
+    const newValue = parseInt(value, 10);
     validateInput(name, newValue);
     setFormValues({ ...formValues, [name]: newValue });
+  };
+
+  const splitSchlagwoerter = () => {
+    const splittedSchlagwoerter = schlagwoerter.split(',');
+    return splittedSchlagwoerter.map((wort) => wort.trim());
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
       formValues.titel = titelInput;
+      checkIfEmpty();
+      formValues.schlagwoerter = splitSchlagwoerter();
       const response = await createBuch(formValues);
 
       if (response.status === 200) {
-        console.log('Buch erfolgreich erstellt:', response.data);
-        setIsBookCreated(true);
-      } else {
-        console.log('Fehler beim Erstellen des Buchs:', response.data);
-        setIsBookCreated(false);
+        if (response.data.errors) {
+          setIsBookCreated(false);
+        } else {
+          setIsBookCreated(true);
+        }
       }
     } catch (error: any) {
-      console.log(`Fehler beim Erstellen des Buchs: ${error.message}`);
       setIsBookCreated(false);
     }
   };
@@ -195,6 +245,7 @@ function Create() {
                   Titel
                 </FormLabel>
                 <Input
+                  required
                   type="text"
                   name="titel"
                   value={titelInput.titel}
@@ -207,6 +258,11 @@ function Create() {
                   Ungültiger Titel
                 </Typography>
               )}
+              {empty.titel.isEmpty === true && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                  Titel darf nicht leer sein
+                </Typography>
+              )}
             </FormControl>
             <FormControl fullWidth margin="normal" sx={{ marginLeft: '1rem' }}>
               <Box display="flex" alignItems="center">
@@ -214,6 +270,7 @@ function Create() {
                   ISBN
                 </FormLabel>
                 <Input
+                  required
                   type="text"
                   name="isbn"
                   value={formValues.isbn}
@@ -224,6 +281,11 @@ function Create() {
               {validationErrors.isbn.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
                   Ungültige ISBN
+                </Typography>
+              )}
+              {empty.isbn.isEmpty === true && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                  ISBN darf nicht leer sein
                 </Typography>
               )}
             </FormControl>
@@ -294,11 +356,16 @@ function Create() {
                 <Input
                   type="text"
                   name="schlagwoerter"
-                  value={formValues.schlagwoerter}
-                  onChange={handleInputChange}
+                  value={schlagwoerter}
+                  onChange={handleSchlagwoerterChange}
                   sx={{ marginBottom: '1rem' }}
                 />
               </Box>
+              {validationErrors.schlagwoerter.isValid === false && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                  Schlagwoerter nur durch Komma trennen
+                </Typography>
+              )}
             </FormControl>
             <FormControl
               fullWidth
@@ -394,7 +461,7 @@ function Create() {
             )}
             {isBookCreated === false && (
               <Typography variant="body1" sx={{ color: 'red' }}>
-                Fehler beim Erstellen des Buchs
+                Fehler beim Erstellen des Buches
               </Typography>
             )}
           </Box>

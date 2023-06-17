@@ -165,7 +165,7 @@ function Login() {
         style={{
           textAlign: 'center',
           marginBottom: '2rem',
-          padding: '1rem',
+          padding: '0 10rem 5rem 10rem',
         }}
       >
         {isLoggedIn && <LoggedIn />}

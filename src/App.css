@@ -6,3 +6,7 @@
   padding: 2rem;
   text-align: center;
 }
+
+html {
+  background-color: white !important;
+}

@@ -61,7 +61,7 @@ function Home() {
               alt="Image 2"
             />
             <CardContent>
-              <h3>Bücher druchsuchen</h3>
+              <h3>Bücher durchsuchen</h3>
               <Typography
                 sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
               >

@@ -1,0 +1,33 @@
+@startuml bookSearch
+hide empty description
+    [*] -left-> BuchAnlegen : Buch anlegen
+    state BuchAnlegen {
+        [*] --> Erstellformular
+        Erstellformular --> Validierung : Daten eingeben & Formular senden
+        Validierung --> Erstellformular : korrekte Eingabe
+        Validierung --> Validierungsfehler : inkorrekte Eingabe
+        Validierungsfehler --> Erstellformular
+    }
+
+    [*] -down-> BuchSuchen : Buch suchen
+    state BuchSuchen {
+        [*] -down-> Suchformular : Suchparameter festlegen
+        Suchformular -down-> Antwort : Suchparameter senden
+        Antwort -down-> Bücherliste : Bücher gefunden
+        Bücherliste -right-> Detailansicht : Buch auswählen
+        Bücherliste -left-> Suchformular
+        Antwort -right-> Fehlermeldung : keine Bücher gefunden
+        Fehlermeldung --> Suchformular
+    }
+
+    [*] -right-> Login : anmelden
+    state Login {
+        [*] --> Anmeldeformular : nicht angemeldet
+        [*] --> Angemeldet : angemeldet
+        Anmeldeformular -left-> Angemeldet : Login erfolgreich
+        Anmeldeformular -down-> Abgemeldet : Login fehlgeschlagen
+        Angemeldet -right-> Abgemeldet : Logout
+        Abgemeldet --> Anmeldeformular
+    }
+
+@enduml

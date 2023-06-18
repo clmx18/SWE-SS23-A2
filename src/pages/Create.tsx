@@ -19,6 +19,8 @@ import { useState } from 'react';
 
 function Create() {
   const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
+  const [isLoggedIn, setisLoggedIn] = useState<boolean | null>(null);
+  const [isbnExists, setIsbnExists] = useState<boolean | null>(null);
   const [validationErrors, setValidationErrors] = useState({
     titel: { isValid: undefined },
     isbn: { isValid: undefined },
@@ -181,20 +183,35 @@ function Create() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      setIsbnExists(false);
       formValues.titel = titelInput;
       checkIfEmpty();
       formValues.schlagwoerter = splitSchlagwoerter();
       const response = await createBuch(formValues);
-
+      const { errors } = response.data;
+      // eslint-disable-next-line max-len, prefer-destructuring
+      const statusCode = errors
+        ? response.data.errors[0]?.extensions?.originalError?.statusCode
+        : undefined;
       if (response.status === 200) {
-        if (response.data.errors) {
+        if (response.data.errors && statusCode === 403) {
+          setIsBookCreated(null);
+          setisLoggedIn(false);
+        } else if (response.data.errors && statusCode === 400) {
+          setIsBookCreated(false);
+        } else if (
+          response.data.errors &&
+          response.data.errors[0].message ===
+            `Die ISBN ${formValues.isbn} existiert bereits`
+        ) {
+          setIsbnExists(true);
           setIsBookCreated(false);
         } else {
           setIsBookCreated(true);
         }
       }
     } catch (error: any) {
-      setIsBookCreated(false);
+      console.log(error);
     }
   };
   return (
@@ -256,6 +273,11 @@ function Create() {
               {empty.isbn.isEmpty === true && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
                   ISBN darf nicht leer sein
+                </Typography>
+              )}
+              {isbnExists === true && (
+                <Typography variant="body2" sx={{ color: 'red' }}>
+                  ISBN existiert bereits
                 </Typography>
               )}
             </FormControl>
@@ -432,6 +454,11 @@ function Create() {
             {isBookCreated === false && (
               <Typography variant="body1" sx={{ color: 'red' }}>
                 Fehler beim Erstellen des Buches
+              </Typography>
+            )}
+            {isLoggedIn === false && (
+              <Typography variant="body1" sx={{ color: 'red' }}>
+                Nicht eingeloggt
               </Typography>
             )}
           </Box>

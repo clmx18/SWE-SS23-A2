@@ -4,6 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
+import userIcon from '../images/userIcon.png';
 
 const PersonListItem = styled(ListItem)({
   marginBottom: '16px',
@@ -28,7 +29,7 @@ function About() {
           <PersonListItem>
             <ListItemAvatar>
               <PersonAvatar>
-                <img src="\src\images\user.png" alt="Profile" />
+                <img src={userIcon} alt="Profile" />
               </PersonAvatar>
             </ListItemAvatar>
             <div>
@@ -39,7 +40,7 @@ function About() {
           <PersonListItem>
             <ListItemAvatar>
               <PersonAvatar>
-                <img src="\src\images\user.png" alt="Profile" />
+                <img src={userIcon} alt="Profile" />
               </PersonAvatar>
             </ListItemAvatar>
             <div>
@@ -50,7 +51,7 @@ function About() {
           <PersonListItem>
             <ListItemAvatar>
               <PersonAvatar>
-                <img src="\src\images\user.png" alt="Profile" />
+                <img src={userIcon} alt="Profile" />
               </PersonAvatar>
             </ListItemAvatar>
             <div>
@@ -61,7 +62,7 @@ function About() {
           <PersonListItem>
             <ListItemAvatar>
               <PersonAvatar>
-                <img src="\src\images\user.png" alt="Profile" />
+                <img src={userIcon} alt="Profile" />
               </PersonAvatar>
             </ListItemAvatar>
             <div>

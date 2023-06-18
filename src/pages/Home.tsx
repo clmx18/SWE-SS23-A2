@@ -7,6 +7,9 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
+import addBook from '../images/addBook.png';
+import library from '../images/library.jpg';
+import listBook from '../images/listBook.png';
 
 function Home() {
   return (
@@ -23,7 +26,7 @@ function Home() {
                 objectFit: 'cover',
                 maxHeight: '40vh',
               }}
-              image="\src\images\library.jpg"
+              image={library}
               alt="Cover Image"
             />
           </Card>
@@ -35,7 +38,7 @@ function Home() {
             <CardMedia
               component="img"
               sx={{ height: '30vh', objectFit: 'contain' }}
-              image="\src\images\add-book.png"
+              image={addBook}
               alt="Image 1"
             />
             <CardContent>
@@ -57,7 +60,7 @@ function Home() {
             <CardMedia
               component="img"
               sx={{ height: '30vh', objectFit: 'contain' }}
-              image="\src\images\list-book.png"
+              image={listBook}
               alt="Image 2"
             />
             <CardContent>

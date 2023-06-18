@@ -8,7 +8,7 @@ COPY package.json .
 
 COPY . .
 
-CMD ["npm", "run","build"]
+CMD ["npm", "run", "build"]
 
 # Stage 2: NGINX
 FROM nginx:1.21.0-alpine

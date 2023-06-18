@@ -13,28 +13,22 @@ import {
   Typography,
 } from '@mui/material';
 import { BuchInput, TitelInput } from '../api/interfaces';
+import { useContext, useState } from 'react';
+import LoginContext from '../context/LoginProvider';
 import { createBuch } from '../api/graphql';
 import { parse as parseIsbn } from 'isbn-utils';
-import { useState } from 'react';
 
 function Create() {
-  const [isBookCreated, setIsBookCreated] = useState<boolean | null>(null);
-  const [isLoggedIn, setisLoggedIn] = useState<boolean | null>(null);
-  const [isbnExists, setIsbnExists] = useState<boolean | null>(null);
   const [validationErrors, setValidationErrors] = useState({
-    titel: { isValid: undefined },
-    isbn: { isValid: undefined },
-    rating: { isValid: undefined },
-    art: { isValid: undefined },
-    preis: { isValid: undefined },
-    rabatt: { isValid: undefined },
-    homepage: { isValid: undefined },
-    schlagwoerter: { isValid: undefined },
-  });
-
-  const [empty, setEmpty] = useState({
-    titel: { isEmpty: false },
-    isbn: { isEmpty: false },
+    titel: { isValid: undefined, message: '' },
+    isbn: { isValid: undefined, message: '' },
+    rating: { isValid: undefined, message: '' },
+    art: { isValid: undefined, message: '' },
+    preis: { isValid: undefined, message: '' },
+    rabatt: { isValid: undefined, message: '' },
+    homepage: { isValid: undefined, message: '' },
+    schlagwoerter: { isValid: undefined, message: '' },
+    bookCreated: { isValid: undefined, message: '' },
   });
 
   const [titelInput, setTitelInput] = useState<TitelInput>({
@@ -50,7 +44,7 @@ function Create() {
     isbn: '',
     rating: 0,
     art: 'DRUCKAUSGABE',
-    preis: 1.11,
+    preis: 9.95,
     rabatt: 0,
     lieferbar: false,
     datum: undefined,
@@ -58,31 +52,28 @@ function Create() {
     schlagwoerter: [],
   });
 
+  const { isLoggedIn } = useContext(LoginContext);
+
+  const setValidation = (name: string, isValid: boolean, message = '') => {
+    setValidationErrors((prevState) => ({
+      ...prevState,
+      [name]: { isValid, message },
+    }));
+  };
+
   const splitSchlagwoerter = () => {
     const splittedSchlagwoerter = schlagwoerter.split(',');
     return splittedSchlagwoerter.map((wort) => wort.trim());
   };
 
   function checkIfEmpty() {
-    const newValue = empty;
     if (titelInput.titel === '') {
-      newValue.titel = { isEmpty: true };
-    } else {
-      newValue.titel = { isEmpty: false };
+      setValidation('titel', false, 'Titel darf nicht leer sein');
     }
     if (formValues.isbn === '') {
-      newValue.isbn = { isEmpty: true };
-    } else {
-      newValue.isbn = { isEmpty: false };
+      setValidation('isbn', false, 'ISBN darf nicht leer sein');
     }
-    setEmpty({ ...empty, ...newValue });
   }
-  const setValidation = (name: string, isValid: boolean) => {
-    setValidationErrors((prevState) => ({
-      ...prevState,
-      [name]: { isValid },
-    }));
-  };
 
   const validateInput = (name: any, value: any) => {
     switch (name) {
@@ -90,7 +81,7 @@ function Create() {
         if (/^\w.*$/u.test(value)) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(name, false, 'Ungültiger Titel');
         }
         break;
       case 'isbn':
@@ -99,14 +90,14 @@ function Create() {
         if (isbn && isbn.isIsbn13()) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(name, false, 'Ungültige ISBN');
         }
         break;
       case 'preis':
         if (/^[1-9]\d*(?:\.\d{1,2})?$/u.test(value)) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(name, false, 'Ungültiger Preis');
         }
         break;
       case 'rabatt':
@@ -117,7 +108,7 @@ function Create() {
         ) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(name, false, 'Ungültiger Rabatt');
         }
         break;
       case 'homepage':
@@ -129,14 +120,18 @@ function Create() {
         ) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(name, false, 'Ungültige Url');
         }
         break;
       case 'schlagwoerter':
         if (/^(\w*)?(,\s?(\w*))*$/u.test(value)) {
           setValidation(name, true);
         } else {
-          setValidation(name, false);
+          setValidation(
+            name,
+            false,
+            'Schlagwörter zusammenschreiben und durch Komma trennen',
+          );
         }
         break;
 
@@ -183,9 +178,8 @@ function Create() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      setIsbnExists(false);
-      formValues.titel = titelInput;
       checkIfEmpty();
+      formValues.titel = titelInput;
       formValues.schlagwoerter = splitSchlagwoerter();
       const response = await createBuch(formValues);
       const { errors } = response.data;
@@ -195,19 +189,25 @@ function Create() {
         : undefined;
       if (response.status === 200) {
         if (response.data.errors && statusCode === 403) {
-          setIsBookCreated(null);
-          setisLoggedIn(false);
+          const errMsg = isLoggedIn
+            ? 'Ungenügende Berechtigungen'
+            : 'Nicht eingeloggt';
+          setValidation('bookCreated', false, errMsg);
         } else if (response.data.errors && statusCode === 400) {
-          setIsBookCreated(false);
+          setValidation(
+            'bookCreated',
+            false,
+            'Buch konnte nicht erstellt werden',
+          );
         } else if (
           response.data.errors &&
           response.data.errors[0].message ===
             `Die ISBN ${formValues.isbn} existiert bereits`
         ) {
-          setIsbnExists(true);
-          setIsBookCreated(false);
+          setValidation('isbn', false, 'Die ISBN existiert bereits');
+          setValidation('bookCreated', false);
         } else {
-          setIsBookCreated(true);
+          setValidation('bookCreated', true, 'Buch wurde erfolgreich erstellt');
         }
       }
     } catch (error: any) {
@@ -242,12 +242,7 @@ function Create() {
               </Box>
               {validationErrors.titel.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültiger Titel
-                </Typography>
-              )}
-              {empty.titel.isEmpty === true && (
-                <Typography variant="body2" sx={{ color: 'red' }}>
-                  Titel darf nicht leer sein
+                  {validationErrors.titel.message}
                 </Typography>
               )}
             </FormControl>
@@ -267,17 +262,7 @@ function Create() {
               </Box>
               {validationErrors.isbn.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültige ISBN
-                </Typography>
-              )}
-              {empty.isbn.isEmpty === true && (
-                <Typography variant="body2" sx={{ color: 'red' }}>
-                  ISBN darf nicht leer sein
-                </Typography>
-              )}
-              {isbnExists === true && (
-                <Typography variant="body2" sx={{ color: 'red' }}>
-                  ISBN existiert bereits
+                  {validationErrors.isbn.message}
                 </Typography>
               )}
             </FormControl>
@@ -296,7 +281,7 @@ function Create() {
               </Box>
               {validationErrors.preis.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültiger Preis
+                  {validationErrors.preis.message}
                 </Typography>
               )}
             </FormControl>
@@ -315,7 +300,7 @@ function Create() {
               </Box>
               {validationErrors.rabatt.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültiger Rabatt
+                  {validationErrors.rabatt.message}
                 </Typography>
               )}
             </FormControl>
@@ -334,7 +319,7 @@ function Create() {
               </Box>
               {validationErrors.homepage.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Ungültige URL
+                  {validationErrors.homepage.message}
                 </Typography>
               )}
             </FormControl>
@@ -355,7 +340,7 @@ function Create() {
               </Box>
               {validationErrors.schlagwoerter.isValid === false && (
                 <Typography variant="body2" sx={{ color: 'red' }}>
-                  Schlagwoerter nur durch Komma trennen
+                  {validationErrors.schlagwoerter.message}
                 </Typography>
               )}
             </FormControl>
@@ -436,32 +421,33 @@ function Create() {
             </FormControl>
           </Box>
         </Box>
-        <Box textAlign="center" marginTop="1rem">
+        <Box textAlign="center" marginTop="1rem" marginRight="1rem">
           <Box display="flex" alignItems="center" justifyContent="center">
             <Button
               type="submit"
               variant="contained"
               onClick={handleSubmit}
-              style={{ backgroundColor: '#DC143C', marginRight: '1rem' }}
+              style={{ backgroundColor: '#DC143C' }}
             >
               Buch erstellen
             </Button>
-            {isBookCreated === true && (
-              <Typography variant="body1" sx={{ color: 'green' }}>
-                Buch erfolgreich erstellt
-              </Typography>
-            )}
-            {isBookCreated === false && (
-              <Typography variant="body1" sx={{ color: 'red' }}>
-                Fehler beim Erstellen des Buches
-              </Typography>
-            )}
-            {isLoggedIn === false && (
-              <Typography variant="body1" sx={{ color: 'red' }}>
-                Nicht eingeloggt
-              </Typography>
-            )}
           </Box>
+          {validationErrors.bookCreated.isValid !== undefined && (
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <Typography
+                variant="body2"
+                sx={{
+                  color:
+                    validationErrors.bookCreated.isValid === false
+                      ? 'red'
+                      : 'green',
+                  margin: '1rem 0 0 0',
+                }}
+              >
+                {validationErrors.bookCreated.message}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </form>
     </Box>

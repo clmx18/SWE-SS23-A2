@@ -47,7 +47,6 @@ function LoggedOut() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    // Handle form submission logic here
     const { username, password } = credentials;
     login(username, password).then((result) => {
       const { errors, loggedIn } = result;

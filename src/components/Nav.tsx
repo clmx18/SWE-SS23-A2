@@ -164,7 +164,7 @@ export default function Nav() {
             disablePadding
             sx={{ display: 'block' }}
             component={Link}
-            to="/home"
+            to="/"
           >
             <ListItemButton
               sx={{

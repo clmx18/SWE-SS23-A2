@@ -1,5 +1,6 @@
 @startuml bookSearch
 hide empty description
+
     [*] -left-> BuchAnlegen : Buch anlegen
     state BuchAnlegen {
         [*] --> Erstellformular
@@ -11,12 +12,13 @@ hide empty description
 
     [*] -down-> BuchSuchen : Buch suchen
     state BuchSuchen {
+        state choice <<choice>>
         [*] -down-> Suchformular : Suchparameter festlegen
-        Suchformular -down-> Antwort : Suchparameter senden
-        Antwort -down-> Bücherliste : Bücher gefunden
+        Suchformular -down-> choice : Suchparameter senden
+        choice -down-> Bücherliste : Bücher gefunden
         Bücherliste -right-> Detailansicht : Buch auswählen
         Bücherliste -left-> Suchformular
-        Antwort -right-> Fehlermeldung : keine Bücher gefunden
+        choice -right-> Fehlermeldung : keine Bücher gefunden
         Fehlermeldung --> Suchformular
     }
 

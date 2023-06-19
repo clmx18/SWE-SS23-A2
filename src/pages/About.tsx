@@ -33,8 +33,8 @@ function About() {
               <Typography
                 sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
               >
-                Kevin ist auch unser Backend Entwickler, welcher Engagement sich
-                Engagement sich über neuen Technologien informiert und in
+                Kevin ist auch unser Backend Entwickler, welcher sich mit
+                Engagement über neuen Technologien informiert und in unserer
                 unserer Arbeit einsetzt!
               </Typography>
             </CardContent>

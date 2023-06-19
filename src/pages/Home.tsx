@@ -49,7 +49,11 @@ function Home() {
                 Hier können Sie ein neues Buch anlegen, und dabei Titel, ISBN,
                 Preis, Rabatt, und vieles mehr definieren.
               </Typography>
-              <Button href="/create" variant="contained" color="primary">
+              <Button
+                href="/create"
+                variant="contained"
+                style={{ backgroundColor: '#DC143C' }}
+              >
                 Anlegen
               </Button>
             </CardContent>
@@ -71,7 +75,11 @@ function Home() {
                 Hier können Sie alle existierenden Bücher durchsuchen, und dabei
                 nach diversen Kriterien filtern.
               </Typography>
-              <Button href="/search" variant="contained" color="primary">
+              <Button
+                href="/search"
+                variant="contained"
+                style={{ backgroundColor: '#DC143C' }}
+              >
                 Suchen
               </Button>
             </CardContent>

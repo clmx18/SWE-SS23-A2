@@ -66,7 +66,7 @@ function About() {
               <Typography
                 sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
               >
-                Lukas ist ein tallentierter Backend Entwickler mit gutem Humor -
+                Lukas ist ein talentierter Backend Entwickler mit gutem Humor -
                 die Arbeit wird zum Genuss in seiner Präsenz!
               </Typography>
             </CardContent>

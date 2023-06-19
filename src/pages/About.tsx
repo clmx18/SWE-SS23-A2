@@ -1,78 +1,79 @@
-import Avatar from '@mui/material/Avatar';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
+import { Box, Button, Card, CardContent, Grid } from '@mui/material';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
-import userIcon from '../images/userIcon.png';
-
-const PersonListItem = styled(ListItem)({
-  marginBottom: '16px',
-});
-
-const PersonAvatar = styled(Avatar)({
-  marginRight: '16px',
-});
 
 function About() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div
-        style={{
-          backgroundColor: '#f2f2f2',
-          padding: '20px',
-          borderRadius: '5px',
-        }}
-      >
-        <h2>Über uns</h2>
-        <List>
-          <PersonListItem>
-            <ListItemAvatar>
-              <PersonAvatar>
-                <img src={userIcon} alt="Profile" />
-              </PersonAvatar>
-            </ListItemAvatar>
-            <div>
-              <Typography variant="subtitle1">Clemens Bülskämper</Typography>
-              <a href="mailto:bucl1017@h-ka.de">bucl1017@h-ka.de</a>
-            </div>
-          </PersonListItem>
-          <PersonListItem>
-            <ListItemAvatar>
-              <PersonAvatar>
-                <img src={userIcon} alt="Profile" />
-              </PersonAvatar>
-            </ListItemAvatar>
-            <div>
-              <Typography variant="subtitle1">Elena Badliuk</Typography>
-              <a href="mailto:bael1018@h-ka.de">bael1018@h-ka.de</a>
-            </div>
-          </PersonListItem>
-          <PersonListItem>
-            <ListItemAvatar>
-              <PersonAvatar>
-                <img src={userIcon} alt="Profile" />
-              </PersonAvatar>
-            </ListItemAvatar>
-            <div>
-              <Typography variant="subtitle1">Lukas Botterer</Typography>
-              <a href="mailto:bolu1021@h-ka.de">bolu1021@h-ka.de</a>
-            </div>
-          </PersonListItem>
-          <PersonListItem>
-            <ListItemAvatar>
-              <PersonAvatar>
-                <img src={userIcon} alt="Profile" />
-              </PersonAvatar>
-            </ListItemAvatar>
-            <div>
-              <Typography variant="subtitle1">Kevin Goll</Typography>
-              <a href="mailto:goke1012@h-ka.de">goke1012@h-ka.de</a>
-            </div>
-          </PersonListItem>
-        </List>
-      </div>
-    </div>
+    <Box sx={{ flexGrow: 1, padding: '2rem' }}>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Card>
+            <AccountCircleOutlinedIcon
+              sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }}
+            />
+            <CardContent>
+              <h3>Clemens Bülskämper</h3>
+              <Typography
+                sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
+              >
+                Clemens ist der CEO unseres Unternehmens und ein begeisterter
+                Full-Stack Entwickler. Er übernimmt gerne die PO und
+                SCRUM-Master Rollen gleichzeitig - toller Chef!
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6}>
+          <Card>
+            <AccountCircleOutlinedIcon
+              sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }}
+            />
+            <CardContent>
+              <h3>Kevin Goll</h3>
+              <Typography
+                sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
+              >
+                Kevin ist auch unser Backend Entwickler, welcher Engagement sich
+                Engagement sich über neuen Technologien informiert und in
+                unserer Arbeit einsetzt!
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6}>
+          <Card>
+            <AccountCircleOutlinedIcon
+              sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }}
+            />
+            <CardContent>
+              <h3>Elena Badliuk</h3>
+              <Typography
+                sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
+              >
+                Elena ist die Web-Designerin und Frontend Entwicklerin - wie
+                praktisch, wenn das Design sich selbst implementiert!
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6}>
+          <Card>
+            <AccountCircleOutlinedIcon
+              sx={{ marginLeft: 1, display: { xs: 'none', md: 'flex' }, mr: 1 }}
+            />
+            <CardContent>
+              <h3>Lukas Botterer</h3>
+              <Typography
+                sx={{ width: '60%', margin: 'auto', marginBottom: '1rem' }}
+              >
+                Lukas ist ein tallentierter Backend Entwickler mit gutem Humor -
+                die Arbeit wird zum Genuss in seiner Präsenz!
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 

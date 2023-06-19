@@ -7,6 +7,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import addBook from '../images/addBook.png';
 import library from '../images/library.jpg';
 import listBook from '../images/listBook.png';
@@ -50,7 +51,8 @@ function Home() {
                 Preis, Rabatt, und vieles mehr definieren.
               </Typography>
               <Button
-                href="/create"
+                component={Link}
+                to={'/create'}
                 variant="contained"
                 style={{ backgroundColor: '#DC143C' }}
               >
@@ -76,7 +78,8 @@ function Home() {
                 nach diversen Kriterien filtern.
               </Typography>
               <Button
-                href="/search"
+                component={Link}
+                to={'/search'}
                 variant="contained"
                 style={{ backgroundColor: '#DC143C' }}
               >

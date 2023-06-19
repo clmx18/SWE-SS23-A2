@@ -35,7 +35,8 @@ function About() {
               >
                 Kevin ist auch unser Backend Entwickler, welcher sich mit
                 Engagement über neuen Technologien informiert und in unserer
-                unserer Arbeit einsetzt!
+                unserer Arbeit einsetzt. Dadurch hält er uns auf dem modernsten
+                Stand!
               </Typography>
             </CardContent>
           </Card>

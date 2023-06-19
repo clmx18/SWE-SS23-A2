@@ -183,7 +183,6 @@ function Create() {
       formValues.schlagwoerter = splitSchlagwoerter();
       const response = await createBuch(formValues);
       const { errors } = response.data;
-      // eslint-disable-next-line max-len, prefer-destructuring
       const statusCode = errors
         ? response.data.errors[0]?.extensions?.originalError?.statusCode
         : undefined;
